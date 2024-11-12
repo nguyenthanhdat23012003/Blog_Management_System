@@ -1,5 +1,7 @@
 package com.example.blog_app.services.implement;
 
+import com.example.blog_app.exceptions.DuplicateResourceException;
+import com.example.blog_app.exceptions.ResourceNotFoundException;
 import com.example.blog_app.models.dtos.UserRequestDto;
 import com.example.blog_app.models.dtos.UserResponseDto;
 import com.example.blog_app.models.entities.User;
@@ -28,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto createUser(UserRequestDto userDto) {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists: " + userDto.getEmail());
+            throw new DuplicateResourceException("Email already exists: " + userDto.getEmail());
         }
 
         User user = this.dtoToUser(userDto);
@@ -40,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(UserRequestDto userDto, Integer userId) {
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
@@ -56,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUser(Integer userId) {
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
         return this.userToDto(user);
     }
 
@@ -71,7 +73,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Integer userId) {
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
         this.userRepository.delete(user);
     }
 
