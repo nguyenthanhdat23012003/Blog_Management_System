@@ -5,6 +5,7 @@ import com.example.blog_app.models.dtos.UserResponseDto;
 import com.example.blog_app.models.entities.User;
 import com.example.blog_app.repositories.UserRepository;
 import com.example.blog_app.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -73,21 +76,10 @@ public class UserServiceImpl implements UserService {
     }
 
     private User dtoToUser(UserRequestDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
-        user.setPassword(userDto.getPassword());
-        user.setAbout(userDto.getAbout());
-        return user;
+        return modelMapper.map(userDto, User.class);
     }
 
     private UserResponseDto userToDto(User user) {
-        UserResponseDto userDto = new UserResponseDto();
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
-        userDto.setAbout(user.getAbout());
-        return userDto;
+        return modelMapper.map(user, UserResponseDto.class);
     }
 }
