@@ -43,7 +43,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         if(permissionRepository.findByName(permissionName).get().isImmutable()){
-            throw new ImmutableResourceException("Can not modify ADMIN and USER permission: " + permissionName);
+            throw new ImmutableResourceException("Can not modify default permission: " + permissionName);
         }
 
         Permission permission = permissionRepository.findByName(permissionName).get();
@@ -67,7 +67,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         if(permissionRepository.findByName(permissionName).get().isImmutable()){
-            throw new ImmutableResourceException("Can not remove ADMIN and USER permission: " + permissionName);
+            throw new ImmutableResourceException("Can not remove default permission: " + permissionName);
         }
 
         Permission permission = permissionRepository.findByName(permissionName).get();
