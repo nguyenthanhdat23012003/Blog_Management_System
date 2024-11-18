@@ -1,10 +1,13 @@
 package com.example.blog_app.controllers;
 
+import com.example.blog_app.common.validation.CreateValidationGroup;
+import com.example.blog_app.common.validation.UpdateValidationGroup;
 import com.example.blog_app.models.dtos.RoleDto;
 import com.example.blog_app.models.dtos.UserRequestDto;
 import com.example.blog_app.models.dtos.UserResponseDto;
 import com.example.blog_app.services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -21,13 +24,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userDto) {
+    public ResponseEntity<UserResponseDto> createUser(@Validated(CreateValidationGroup.class) @RequestBody UserRequestDto userDto) {
         UserResponseDto createdUser = userService.createUser(userDto);
         return ResponseEntity.status(201).body(createdUser);
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> updateUser(@Valid @RequestBody UserRequestDto userDto, @PathVariable Long userId) {
+    public ResponseEntity<UserResponseDto> updateUser(@Validated(UpdateValidationGroup.class) @RequestBody UserRequestDto userDto, @PathVariable Long userId) {
         UserResponseDto updatedUser = userService.updateUser(userDto, userId);
         return ResponseEntity.status(200).body(updatedUser);
     }
