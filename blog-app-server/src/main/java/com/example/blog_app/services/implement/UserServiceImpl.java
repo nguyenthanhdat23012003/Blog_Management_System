@@ -54,12 +54,18 @@ public class UserServiceImpl implements UserService {
             throw new ImmutableResourceException("User immutable");
         }
 
-        user.setName(userDto.getName());
-        user.setEmail(userDto.getEmail());
+        if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+            user.setEmail(userDto.getEmail());
+        }
+        if (userDto.getName() != null && !userDto.getName().isEmpty()) {
+            user.setName(userDto.getName());
+        }
+        if (userDto.getAbout() != null && !userDto.getAbout().isEmpty()) {
+            user.setAbout(userDto.getAbout());
+        }
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
-        user.setAbout(userDto.getAbout());
 
         User updatedUser = this.userRepository.save(user);
         return this.userToDto(updatedUser);

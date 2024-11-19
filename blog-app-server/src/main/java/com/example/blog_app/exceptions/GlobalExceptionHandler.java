@@ -12,9 +12,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Global exception handler for managing and responding to exceptions
+ * across the entire application.
+ *
+ * <p>This class provides methods to handle various exceptions
+ * such as {@link ResourceNotFoundException}, {@link DuplicateResourceException},
+ * {@link ImmutableResourceException}, and validation errors.</p>
+ *
+ * <p>Each exception handler constructs a meaningful response
+ * with an appropriate HTTP status code and error details.</p>
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles {@link ResourceNotFoundException} exceptions.
+     *
+     * @param ex the exception to handle
+     * @return a response entity containing error details with HTTP status 404 (NOT_FOUND)
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         Map<String, String> response = new HashMap<>();
@@ -23,6 +40,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    /**
+     * Handles {@link DuplicateResourceException} exceptions.
+     *
+     * @param ex the exception to handle
+     * @return a response entity containing error details with HTTP status 409 (CONFLICT)
+     */
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<Map<String, String>> handleDuplicateResourceException(DuplicateResourceException ex) {
         Map<String, String> response = new HashMap<>();
@@ -31,6 +54,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    /**
+     * Handles {@link ImmutableResourceException} exceptions.
+     *
+     * @param ex the exception to handle
+     * @return a response entity containing error details with HTTP status 403 (FORBIDDEN)
+     */
     @ExceptionHandler(ImmutableResourceException.class)
     public ResponseEntity<Map<String, String>> handleImmutableResourceException(ImmutableResourceException ex) {
         Map<String, String> response = new HashMap<>();
@@ -39,6 +68,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
+    /**
+     * Handles generic {@link Exception} instances not covered by other handlers.
+     *
+     * @param ex the exception to handle
+     * @return a response entity containing error details with HTTP status 500 (INTERNAL_SERVER_ERROR)
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
         Map<String, String> response = new HashMap<>();
@@ -47,6 +82,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
+    /**
+     * Handles validation exceptions thrown when method arguments fail validation.
+     *
+     * @param ex the exception containing validation errors
+     * @return a response entity containing a list of validation error details with HTTP status 400 (BAD_REQUEST)
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<Map<String, String>> errors = ex.getBindingResult().getFieldErrors().stream()
