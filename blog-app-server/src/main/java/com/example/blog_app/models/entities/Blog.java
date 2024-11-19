@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity representing a blog post in the application.
@@ -59,6 +61,30 @@ public class Blog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User user;
+
+    /**
+     * Categories associated with this blog.
+     * Managed via the join table `blog_categories` with `blog_id` and `category_id`.
+     * Uses a {@code Set} to avoid duplicate categories.
+     */
+    @ManyToMany
+    @JoinTable(
+            name = "blog_categories",
+            joinColumns = @JoinColumn(name = "blog_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+    /**
+     * The series this blog belongs to.
+     *
+     * <p>This field defines a many-to-one relationship with {@link Series},
+     * allowing each blog to optionally belong to a single series.
+     * The relationship is not mandatory, as a blog can exist without being part of a series.</p>
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "series_id") // Nullable foreign key to represent optional series association
+    private Series series;
 
     /**
      * The timestamp when the blog post was created.

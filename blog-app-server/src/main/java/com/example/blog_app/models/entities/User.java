@@ -123,5 +123,14 @@ public class User {
      * <p>Uses LAZY loading to fetch blogs only when accessed.</p>
      */
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Blog> blogs = new ArrayList<>();
+    private Set<Blog> blogs = new HashSet<>();
+
+    /**
+     * List of series authored by the user.
+     *
+     * <p>Mapped by {@link Series#user}, with cascading CRUD operations and orphan removal enabled.</p>
+     * <p>Uses LAZY loading to fetch series only when accessed.</p>
+     */
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<Series> series = new HashSet<>();
 }
