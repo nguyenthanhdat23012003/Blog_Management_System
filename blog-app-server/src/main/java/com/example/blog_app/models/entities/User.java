@@ -10,7 +10,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,10 +74,10 @@ public class User {
     /**
      * The roles associated with the user.
      *
-     * <p>Defines a many-to-many relationship with the {@link Role} entity.
-     * Roles determine the permissions and access levels of the user.</p>
+     * <p>Defines a many-to-many relationship with the {@link Role} entity.</p>
+     * <p>Roles determine the permissions and access levels of the user.</p>
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -113,4 +115,22 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    /**
+     * List of blogs authored by the user.
+     *
+     * <p>Mapped by {@link Blog#user}, with cascading CRUD operations and orphan removal enabled.</p>
+     * <p>Uses LAZY loading to fetch blogs only when accessed.</p>
+     */
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<Blog> blogs = new HashSet<>();
+
+    /**
+     * List of series authored by the user.
+     *
+     * <p>Mapped by {@link Series#user}, with cascading CRUD operations and orphan removal enabled.</p>
+     * <p>Uses LAZY loading to fetch series only when accessed.</p>
+     */
+    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<Series> series = new HashSet<>();
 }

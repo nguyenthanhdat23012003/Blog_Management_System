@@ -50,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         if(roleRepository.findByName(roleName).get().isImmutable()){
-            throw new ImmutableResourceException("Can not modify default role: " + roleDto.getName());
+            throw new ImmutableResourceException("Can not modify default role: " + roleName);
         }
 
         Role role = roleRepository.findByName(roleName).get();
