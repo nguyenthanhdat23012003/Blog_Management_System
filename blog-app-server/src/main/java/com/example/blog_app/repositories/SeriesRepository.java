@@ -28,5 +28,5 @@ public interface SeriesRepository extends JpaRepository<Series, Integer> {
      * @param id the ID of the series to search for.
      * @return an {@link Optional} containing the matching {@link Series}, or an empty {@link Optional} if no series is found.
      */
-    Optional<Series> findById(Integer id);
+    Optional<Series> findById(Long id);
 }

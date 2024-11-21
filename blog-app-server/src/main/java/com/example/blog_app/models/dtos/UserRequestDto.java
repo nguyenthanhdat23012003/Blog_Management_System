@@ -40,11 +40,6 @@ import lombok.Setter;
 public class UserRequestDto {
 
     /**
-     * The unique identifier of the user.
-     */
-    private int id;
-
-    /**
      * The name of the user.
      *
      * <p>Must be between 3 and 100 characters.</p>
