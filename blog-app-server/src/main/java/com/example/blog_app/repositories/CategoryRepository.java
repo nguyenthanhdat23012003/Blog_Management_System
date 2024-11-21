@@ -28,5 +28,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
      * @param id the ID of the category to search for.
      * @return an {@link Optional} containing the matching {@link Category}, or an empty {@link Optional} if no category is found.
      */
-    Optional<Category> findById(Integer id);
+    Optional<Category> findById(Long id);
 }

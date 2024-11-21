@@ -57,7 +57,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/roles/**").permitAll()
-                        .requestMatchers("/api/permissions/**").permitAll() // Cho phép truy cập các endpoint liên quan đến user
+                        .requestMatchers("/api/permissions/**").permitAll()
+                        .requestMatchers("/api/categories/**").permitAll()
                         .anyRequest().authenticated() // Yêu cầu xác thực cho các endpoint khác
                 );
         return http.build();
