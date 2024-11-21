@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/roles/**").permitAll()
                         .requestMatchers("/api/permissions/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
+                        .requestMatchers("/api/series/**").permitAll()
                         .anyRequest().authenticated() // Yêu cầu xác thực cho các endpoint khác
                 );
         return http.build();

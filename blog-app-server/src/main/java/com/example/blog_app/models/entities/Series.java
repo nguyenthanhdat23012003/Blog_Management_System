@@ -1,10 +1,14 @@
 package com.example.blog_app.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +18,7 @@ import java.util.Set;
  * <p>This class maps to the "series" table in the database and defines
  * the structure and relationships for managing series.</p>
  *
- * <p>Each blog post has a title, content, and an associated author (a {@link User}).</p>
+ * <p>Each series has a title, content, and an associated author (a {@link User}).</p>
  */
 @Entity
 @Table(name = "series")
@@ -69,4 +73,26 @@ public class Series {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User user;
+
+    /**
+     * The timestamp when the series was created.
+     *
+     * <p>Automatically set when the series is created and cannot be updated.</p>
+     * <p>Formatted as "yyyy-MM-dd HH:mm:ss" in JSON responses.</p>
+     */
+    @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    /**
+     * The timestamp when the series was last updated.
+     *
+     * <p>Automatically updated whenever the series is modified.</p>
+     * <p>Formatted as "yyyy-MM-dd HH:mm:ss" in JSON responses.</p>
+     */
+    @UpdateTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
