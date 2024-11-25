@@ -1,6 +1,7 @@
 package com.example.blog_app.services;
 
-import com.example.blog_app.models.dtos.PermissionDto;
+import com.example.blog_app.models.dtos.PermissionRequestDto;
+import com.example.blog_app.models.dtos.PermissionResponseDto;
 
 import java.util.List;
 
@@ -10,13 +11,8 @@ import java.util.List;
  * <p>This interface defines the business logic for permission management,
  * including CRUD operations.</p>
  *
- * <p>Example usage:</p>
- * <pre>
- * {@code
- * PermissionService permissionService = new PermissionServiceImpl();
- * PermissionDto permission = permissionService.createPermission(new PermissionDto("READ_PRIVILEGES"));
- * }
- * </pre>
+ * @see PermissionRequestDto
+ * @see PermissionResponseDto
  */
 public interface PermissionService {
 
@@ -24,30 +20,39 @@ public interface PermissionService {
      * Creates a new permission.
      *
      * @param permissionDto the DTO containing permission details for creation
-     * @return the created permission's details as a response DTO
+     * @return the created permission's details as a {@link PermissionResponseDto}
      */
-    PermissionDto createPermission(PermissionDto permissionDto);
+    PermissionResponseDto createPermission(PermissionRequestDto permissionDto);
 
     /**
      * Updates an existing permission's details.
      *
-     * @param permissionDto   the DTO containing updated permission details
-     * @param permissionName  the name of the permission to be updated
-     * @return the updated permission's details as a response DTO
+     * @param permissionDto the DTO containing updated permission details
+     * @param id the ID of the permission to be updated
+     * @return the updated permission's details as a {@link PermissionResponseDto}
      */
-    PermissionDto updatePermission(PermissionDto permissionDto, String permissionName);
+    PermissionResponseDto updatePermissionById(PermissionRequestDto permissionDto, Long id);
+
+    /**
+     * Retrieves a permission by its ID.
+     *
+     * @param id the ID of the permission to retrieve
+     * @return the permission's details as a {@link PermissionResponseDto}
+     * @throws com.example.blog_app.exceptions.ResourceNotFoundException if the permission does not exist
+     */
+    PermissionResponseDto getPermissionById(Long id);
 
     /**
      * Retrieves a list of all permissions.
      *
      * @return a list of permission response DTOs representing all permissions
      */
-    List<PermissionDto> getAllPermissions();
+    List<PermissionResponseDto> getAllPermissions();
 
     /**
-     * Deletes a permission by its name.
+     * Deletes a permission by its ID.
      *
-     * @param permissionName the name of the permission to delete
+     * @param id the ID of the permission to delete
      */
-    void deletePermission(String permissionName);
+    void deletePermissionById(Long id);
 }
