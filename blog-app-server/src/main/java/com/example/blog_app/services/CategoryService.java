@@ -35,7 +35,7 @@ public interface CategoryService {
      * @param categoryDto the DTO containing the updated category details
      * @return the updated category as a response DTO
      */
-    CategoryResponseDto updateCategory(CategoryRequestDto categoryDto, Long categoryId);
+    CategoryResponseDto updateCategoryById(CategoryRequestDto categoryDto, Long categoryId);
 
     /**
      * Retrieves all categories.
@@ -50,12 +50,12 @@ public interface CategoryService {
      * @param categoryId the ID of the category to retrieve
      * @return the category as a response DTO
      */
-    CategoryResponseDto getCategory(Long categoryId);
+    CategoryResponseDto getCategoryById(Long categoryId);
 
     /**
      * Deletes a specific category by its ID.
      *
      * @param categoryId the ID of the category to delete
      */
-    void deleteCategory(Long categoryId);
+    void deleteCategoryById(Long categoryId);
 }

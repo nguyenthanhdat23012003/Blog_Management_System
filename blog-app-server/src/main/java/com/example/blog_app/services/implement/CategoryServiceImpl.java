@@ -6,7 +6,7 @@ import com.example.blog_app.models.dtos.CategoryResponseDto;
 import com.example.blog_app.models.entities.Category;
 import com.example.blog_app.repositories.CategoryRepository;
 import com.example.blog_app.services.CategoryService;
-import org.modelmapper.ModelMapper;
+import com.example.blog_app.models.mappers.CategoryMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,17 +27,17 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final ModelMapper modelMapper;
+    private final CategoryMapper categoryMapper;
 
     /**
      * Constructs the CategoryServiceImpl with required dependencies.
      *
      * @param categoryRepository the repository for managing categories
-     * @param modelMapper        the model mapper for DTO and entity conversion
+     * @param categoryMapper     the mapper for converting between entities and DTOs
      */
-    public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
-        this.modelMapper = modelMapper;
+        this.categoryMapper = categoryMapper;
     }
 
     /**
@@ -48,14 +48,9 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public CategoryResponseDto createCategory(CategoryRequestDto categoryDto) {
-        Category category = this.dtoToCategory(categoryDto);
-        category.setTitle(categoryDto.getTitle());
-        if (categoryDto.getDescription() != null && !categoryDto.getDescription().isEmpty()) {
-            category.setDescription(categoryDto.getDescription());
-        }
-        Category savedCategory = this.categoryRepository.save(category);
-
-        return this.categoryToDto(savedCategory);
+        Category category = categoryMapper.toEntity(categoryDto);
+        Category savedCategory = categoryRepository.save(category);
+        return categoryMapper.toResponseDto(savedCategory);
     }
 
     /**
@@ -67,20 +62,14 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceNotFoundException if the category does not exist
      */
     @Override
-    public CategoryResponseDto updateCategory(CategoryRequestDto categoryDto, Long categoryId) {
-        Category category = this.categoryRepository.findById(categoryId)
+    public CategoryResponseDto updateCategoryById(CategoryRequestDto categoryDto, Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
 
-        if (categoryDto.getDescription() != null && !categoryDto.getDescription().isEmpty()) {
-            category.setDescription(categoryDto.getDescription());
-        }
+        categoryMapper.updateEntityFromDto(categoryDto, category);
+        Category updatedCategory = categoryRepository.save(category);
 
-        if (categoryDto.getTitle() != null && !categoryDto.getTitle().isEmpty()) {
-            category.setTitle(categoryDto.getTitle());
-        }
-
-        Category savedCategory = this.categoryRepository.save(category);
-        return this.categoryToDto(savedCategory);
+        return categoryMapper.toResponseDto(updatedCategory);
     }
 
     /**
@@ -90,10 +79,10 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<CategoryResponseDto> getAllCategories() {
-        return this.categoryRepository.findAll()
+        return categoryRepository.findAll()
                 .stream()
-                .map(this::categoryToDto)
-                .collect(Collectors.toList());
+                .map(categoryMapper::toResponseDto)
+                .toList();
     }
 
     /**
@@ -104,11 +93,11 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceNotFoundException if the category does not exist
      */
     @Override
-    public CategoryResponseDto getCategory(Long categoryId) {
-        Category category = this.categoryRepository.findById(categoryId)
+    public CategoryResponseDto getCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
 
-        return this.categoryToDto(category);
+        return categoryMapper.toResponseDto(category);
     }
 
     /**
@@ -118,30 +107,10 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws ResourceNotFoundException if the category does not exist
      */
     @Override
-    public void deleteCategory(Long categoryId) {
-        Category category = this.categoryRepository.findById(categoryId)
+    public void deleteCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
 
-        this.categoryRepository.delete(category);
-    }
-
-    /**
-     * Converts a {@link CategoryRequestDto} to a {@link Category} entity.
-     *
-     * @param categoryDto the DTO to convert
-     * @return the converted entity
-     */
-    private Category dtoToCategory(CategoryRequestDto categoryDto) {
-        return modelMapper.map(categoryDto, Category.class);
-    }
-
-    /**
-     * Converts a {@link Category} entity to a {@link CategoryResponseDto}.
-     *
-     * @param category the category entity to convert
-     * @return the converted DTO
-     */
-    private CategoryResponseDto categoryToDto(Category category) {
-        return modelMapper.map(category, CategoryResponseDto.class);
+        categoryRepository.delete(category);
     }
 }
