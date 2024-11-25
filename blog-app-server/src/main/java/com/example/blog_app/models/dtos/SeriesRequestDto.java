@@ -45,7 +45,7 @@ public class SeriesRequestDto {
      * <p>Must not exceed 100 characters.</p>
      */
     @NotEmpty(message = "Title is required", groups = CreateValidationGroup.class)
-    @Size(max = 10, message = "Title must not exceed 100 characters", groups = GeneralValidationGroup.class)
+    @Size(max = 100, message = "Title must not exceed 100 characters", groups = GeneralValidationGroup.class)
     private String title;
 
     /**
