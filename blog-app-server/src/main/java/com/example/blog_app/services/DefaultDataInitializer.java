@@ -78,12 +78,14 @@ public class DefaultDataInitializer {
         assignPermissionsToRole(adminRole, List.of(
                 "VIEW_USER", "CREATE_USER", "UPDATE_USER", "DELETE_USER",
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
-                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY"
+                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY",
+                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
         ));
 
         assignPermissionsToRole(userRole, List.of(
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
-                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY"
+                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY",
+                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
         ));
 
         createDefaultAdminUser(adminRole);
@@ -96,7 +98,8 @@ public class DefaultDataInitializer {
         List<String> permissions = List.of(
                 "VIEW_USER", "CREATE_USER", "UPDATE_USER", "DELETE_USER",
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
-                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY"
+                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY",
+                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
         );
 
         for (String permissionName : permissions) {

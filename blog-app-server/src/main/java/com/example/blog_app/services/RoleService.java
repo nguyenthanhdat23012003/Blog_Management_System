@@ -1,7 +1,7 @@
 package com.example.blog_app.services;
 
-import com.example.blog_app.models.dtos.PermissionDto;
-import com.example.blog_app.models.dtos.RoleDto;
+import com.example.blog_app.models.dtos.RoleRequestDto;
+import com.example.blog_app.models.dtos.RoleResponseDto;
 
 import java.util.List;
 
@@ -27,52 +27,39 @@ public interface RoleService {
      * @param roleDto the DTO containing role details for creation
      * @return the created role's details as a response DTO
      */
-    RoleDto createRole(RoleDto roleDto);
+    RoleResponseDto createRole(RoleRequestDto roleDto);
 
     /**
      * Updates an existing role's details.
      *
      * @param roleDto  the DTO containing updated role details
-     * @param roleName the name of the role to be updated
+     * @param roleId the id of the role to be updated
      * @return the updated role's details as a response DTO
      */
-    RoleDto updateRole(RoleDto roleDto, String roleName);
+    RoleResponseDto updateRoleById(RoleRequestDto roleDto, Long roleId);
+
+    /**
+     * Retrieves the details of a role by its ID.
+     *
+     * <p>Fetches the role's information, including its permissions.</p>
+     *
+     * @param roleId the ID of the role to retrieve
+     * @return the role's details as a response DTO
+     * @throws com.example.blog_app.exceptions.ResourceNotFoundException if the role does not exist
+     */
+    RoleResponseDto getRoleById(Long roleId);
 
     /**
      * Retrieves a list of all roles.
      *
      * @return a list of role response DTOs representing all roles
      */
-    List<RoleDto> getAllRoles();
+    List<RoleResponseDto> getAllRoles();
 
     /**
      * Deletes a role by its name.
      *
-     * @param roleName the name of the role to delete
+     * @param roleId the id of the role to delete
      */
-    void deleteRole(String roleName);
-
-    /**
-     * Retrieves the permissions assigned to a specific role.
-     *
-     * @param roleName the name of the role
-     * @return a list of permission DTOs assigned to the role
-     */
-    List<PermissionDto> getRolePermissions(String roleName);
-
-    /**
-     * Assigns a permission to a role.
-     *
-     * @param roleName       the name of the role
-     * @param permissionName the name of the permission to assign
-     */
-    void assignPermissionToRole(String roleName, String permissionName);
-
-    /**
-     * Unassigns a permission from a role.
-     *
-     * @param roleName       the name of the role
-     * @param permissionName the name of the permission to unassign
-     */
-    void unassignPermissionToRole(String roleName, String permissionName);
+    void deleteRoleById(Long roleId);
 }

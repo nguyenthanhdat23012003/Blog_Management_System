@@ -1,7 +1,9 @@
 package com.example.blog_app.exceptions;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -101,4 +103,29 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
+    /**
+     * Handles {@link HttpMessageNotReadableException} to detect and respond to unrecognized fields.
+     *
+     * @param ex the exception to handle
+     * @return a response entity containing error details with HTTP status 400 (BAD_REQUEST)
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+        Map<String, Object> response = new HashMap<>();
+
+        if (cause instanceof UnrecognizedPropertyException) {
+            UnrecognizedPropertyException unrecognizedEx = (UnrecognizedPropertyException) cause;
+            response.put("error", "Validation Error");
+            response.put("message", "Unrecognized field: " + unrecognizedEx.getPropertyName());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        response.put("error", "Bad Request");
+        response.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+
 }
