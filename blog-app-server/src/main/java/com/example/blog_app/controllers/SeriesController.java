@@ -71,7 +71,7 @@ public class SeriesController {
     public ResponseEntity<SeriesResponseDto> updateSeries(
             @Validated(UpdateValidationGroup.class) @RequestBody SeriesRequestDto seriesDto,
             @PathVariable Long seriesId) {
-        SeriesResponseDto updatedSeries = seriesService.updateSeries(seriesDto, seriesId);
+        SeriesResponseDto updatedSeries = seriesService.updateSeriesById(seriesDto, seriesId);
         return ResponseEntity.status(200).body(updatedSeries);
     }
 
@@ -83,7 +83,7 @@ public class SeriesController {
      */
     @GetMapping("/{seriesId}")
     public ResponseEntity<SeriesResponseDto> getSeries(@PathVariable Long seriesId) {
-        SeriesResponseDto series = seriesService.getSeries(seriesId);
+        SeriesResponseDto series = seriesService.getSeriesById(seriesId);
         return ResponseEntity.status(200).body(series);
     }
 
@@ -106,7 +106,7 @@ public class SeriesController {
      */
     @DeleteMapping("/{seriesId}")
     public ResponseEntity<String> deleteSeries(@PathVariable Long seriesId) {
-        seriesService.deleteSeries(seriesId);
+        seriesService.deleteSeriesById(seriesId);
         return ResponseEntity.ok("Series deleted successfully");
     }
 
@@ -118,7 +118,7 @@ public class SeriesController {
      */
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<SeriesResponseDto>> getSeriesByUser(@PathVariable Long userId) {
-        List<SeriesResponseDto> series = seriesService.getSeriesByUser(userId);
+        List<SeriesResponseDto> series = seriesService.getSeriesByUserId(userId);
         return ResponseEntity.status(200).body(series);
     }
 }

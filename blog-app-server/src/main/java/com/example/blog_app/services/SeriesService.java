@@ -36,7 +36,7 @@ public interface SeriesService {
      * @param seriesId  the ID of the series to update
      * @return the updated series as a response DTO
      */
-    SeriesResponseDto updateSeries(SeriesRequestDto seriesDto, Long seriesId);
+    SeriesResponseDto updateSeriesById(SeriesRequestDto seriesDto, Long seriesId);
 
     /**
      * Retrieves all series.
@@ -51,14 +51,14 @@ public interface SeriesService {
      * @param seriesId the ID of the series to retrieve
      * @return the series as a response DTO
      */
-    SeriesResponseDto getSeries(Long seriesId);
+    SeriesResponseDto getSeriesById(Long seriesId);
 
     /**
      * Deletes a specific series by its ID.
      *
      * @param seriesId the ID of the series to delete
      */
-    void deleteSeries(Long seriesId);
+    void deleteSeriesById(Long seriesId);
 
     /**
      * Retrieves all series authored by a specific user.
@@ -66,5 +66,5 @@ public interface SeriesService {
      * @param userId the ID of the user whose series are to be retrieved
      * @return a list of series response DTOs authored by the user
      */
-    List<SeriesResponseDto> getSeriesByUser(Long userId);
+    List<SeriesResponseDto> getSeriesByUserId(Long userId);
 }
