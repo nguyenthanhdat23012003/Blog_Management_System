@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * Data Transfer Object (DTO) for returning user information in API responses.
@@ -52,6 +53,11 @@ public class UserResponseDto {
      * A brief description or bio about the user.
      */
     private String about;
+
+    /**
+     * The roles set of the user
+     */
+    private Set<Long> roleIds;
 
     /**
      * The timestamp when the user was created, stored as a {@link LocalDateTime}.
