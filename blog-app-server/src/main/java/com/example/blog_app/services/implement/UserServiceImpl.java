@@ -172,10 +172,16 @@ public class UserServiceImpl implements UserService {
      */
     private void handleRoles(User user, Set<Long> roleIds) {
         if (roleIds != null && !roleIds.isEmpty()) {
-            Set<Role> roles = roleIds.stream()
-                    .map(roleId -> roleRepository.findById(roleId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId)))
+            Set<Role> roles = roleRepository.findAllById(roleIds).stream().collect(Collectors.toSet());
+
+            Set<Long> invalidRoleIds = roleIds.stream()
+                    .filter(roleId -> roles.stream().noneMatch(role -> role.getId().equals(roleId)))
                     .collect(Collectors.toSet());
+
+            if (!invalidRoleIds.isEmpty()) {
+                throw new ResourceNotFoundException("Roles not found with IDs: " + invalidRoleIds);
+            }
+
             user.setRoles(roles);
         }
     }
