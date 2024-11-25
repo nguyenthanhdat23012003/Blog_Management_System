@@ -1,6 +1,5 @@
 package com.example.blog_app.services;
 
-import com.example.blog_app.models.dtos.PermissionDto;
 import com.example.blog_app.models.dtos.RoleRequestDto;
 import com.example.blog_app.models.dtos.RoleResponseDto;
 
