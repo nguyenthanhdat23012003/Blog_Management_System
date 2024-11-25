@@ -70,7 +70,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> updateCategory(
             @Validated(UpdateValidationGroup.class) @RequestBody CategoryRequestDto categoryDto,
             @PathVariable Long categoryId) {
-        CategoryResponseDto updatedCategory = categoryService.updateCategory(categoryDto, categoryId);
+        CategoryResponseDto updatedCategory = categoryService.updateCategoryById(categoryDto, categoryId);
         return ResponseEntity.status(200).body(updatedCategory);
     }
 
@@ -82,7 +82,7 @@ public class CategoryController {
      */
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryResponseDto> getCategory(@PathVariable Long categoryId) {
-        CategoryResponseDto category = categoryService.getCategory(categoryId);
+        CategoryResponseDto category = categoryService.getCategoryById(categoryId);
         return ResponseEntity.status(200).body(category);
     }
 
@@ -105,7 +105,7 @@ public class CategoryController {
      */
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-        categoryService.deleteCategory(categoryId);
+        categoryService.deleteCategoryById(categoryId);
         return ResponseEntity.ok("Category deleted successfully");
     }
 }
