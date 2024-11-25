@@ -4,6 +4,7 @@ import com.example.blog_app.models.dtos.PermissionRequestDto;
 import com.example.blog_app.models.dtos.PermissionResponseDto;
 import com.example.blog_app.models.entities.Permission;
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 /**
  * Mapper interface for transforming {@link Permission} entities to DTOs and vice versa.
@@ -15,7 +16,7 @@ import org.mapstruct.Mapper;
  * @see PermissionRequestDto
  * @see PermissionResponseDto
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface PermissionMapper {
 
     /**
