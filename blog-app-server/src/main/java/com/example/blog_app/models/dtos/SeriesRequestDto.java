@@ -1,6 +1,8 @@
 package com.example.blog_app.models.dtos;
 
 import com.example.blog_app.common.validation.CreateValidationGroup;
+import com.example.blog_app.common.validation.GeneralValidationGroup;
+import com.example.blog_app.models.entities.User;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -43,7 +45,7 @@ public class SeriesRequestDto {
      * <p>Must not exceed 100 characters.</p>
      */
     @NotEmpty(message = "Title is required", groups = CreateValidationGroup.class)
-    @Size(max = 100, message = "Title must not exceed 100 characters")
+    @Size(max = 10, message = "Title must not exceed 100 characters", groups = GeneralValidationGroup.class)
     private String title;
 
     /**
@@ -51,7 +53,7 @@ public class SeriesRequestDto {
      *
      * <p>Optional. Cannot exceed 500 characters.</p>
      */
-    @Size(max = 500, message = "Description must not exceed 500 characters")
+    @Size(max = 500, message = "Description must not exceed 500 characters", groups = GeneralValidationGroup.class)
     private String description;
 
     /**

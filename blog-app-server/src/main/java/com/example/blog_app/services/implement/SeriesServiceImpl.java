@@ -5,6 +5,7 @@ import com.example.blog_app.models.dtos.SeriesRequestDto;
 import com.example.blog_app.models.dtos.SeriesResponseDto;
 import com.example.blog_app.models.entities.Series;
 import com.example.blog_app.models.entities.User;
+import com.example.blog_app.models.mappers.SeriesMapper;
 import com.example.blog_app.repositories.SeriesRepository;
 import com.example.blog_app.repositories.UserRepository;
 import com.example.blog_app.services.SeriesService;
@@ -31,19 +32,19 @@ public class SeriesServiceImpl implements SeriesService {
 
     private final SeriesRepository seriesRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final SeriesMapper seriesMapper;
 
     /**
      * Constructs the SeriesServiceImpl with required dependencies.
      *
      * @param seriesRepository the repository for managing series
      * @param userRepository   the repository for managing users
-     * @param modelMapper      the model mapper for DTO and entity conversion
+     * @param seriesMapper     the mapper for converting between entities and DTOs
      */
-    public SeriesServiceImpl(SeriesRepository seriesRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public SeriesServiceImpl(SeriesRepository seriesRepository, UserRepository userRepository, SeriesMapper seriesMapper) {
         this.seriesRepository = seriesRepository;
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
+        this.seriesMapper = seriesMapper;
     }
 
     /**
@@ -57,11 +58,11 @@ public class SeriesServiceImpl implements SeriesService {
         User author = userRepository.findById(seriesDto.getAuthorId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + seriesDto.getAuthorId()));
 
-        Series series = this.dtoToSeries(seriesDto);
+        Series series = seriesMapper.toEntity(seriesDto);
         series.setUser(author);
 
         Series savedSeries = seriesRepository.save(series);
-        return this.seriesToDto(savedSeries);
+        return seriesMapper.toResponseDto(savedSeries);
     }
 
     /**
@@ -73,19 +74,14 @@ public class SeriesServiceImpl implements SeriesService {
      * @throws ResourceNotFoundException if the series does not exist
      */
     @Override
-    public SeriesResponseDto updateSeries(SeriesRequestDto seriesDto, Long seriesId) {
+    public SeriesResponseDto updateSeriesById(SeriesRequestDto seriesDto, Long seriesId) {
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new ResourceNotFoundException("Series not found with ID: " + seriesId));
 
-        if (seriesDto.getTitle() != null && !seriesDto.getTitle().isEmpty()) {
-            series.setTitle(seriesDto.getTitle());
-        }
-        if (seriesDto.getDescription() != null && !seriesDto.getDescription().isEmpty()) {
-            series.setDescription(seriesDto.getDescription());
-        }
-
+        seriesMapper.updateEntityFromDto(seriesDto, series);
         Series updatedSeries = seriesRepository.save(series);
-        return this.seriesToDto(updatedSeries);
+
+        return seriesMapper.toResponseDto(updatedSeries);
     }
 
     /**
@@ -97,7 +93,7 @@ public class SeriesServiceImpl implements SeriesService {
     public List<SeriesResponseDto> getAllSeries() {
         return seriesRepository.findAll()
                 .stream()
-                .map(this::seriesToDto)
+                .map(seriesMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -109,11 +105,11 @@ public class SeriesServiceImpl implements SeriesService {
      * @throws ResourceNotFoundException if the series does not exist
      */
     @Override
-    public SeriesResponseDto getSeries(Long seriesId) {
+    public SeriesResponseDto getSeriesById(Long seriesId) {
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new ResourceNotFoundException("Series not found with ID: " + seriesId));
 
-        return this.seriesToDto(series);
+        return seriesMapper.toResponseDto(series);
     }
 
     /**
@@ -123,7 +119,7 @@ public class SeriesServiceImpl implements SeriesService {
      * @throws ResourceNotFoundException if the series does not exist
      */
     @Override
-    public void deleteSeries(Long seriesId) {
+    public void deleteSeriesById(Long seriesId) {
         Series series = seriesRepository.findById(seriesId)
                 .orElseThrow(() -> new ResourceNotFoundException("Series not found with ID: " + seriesId));
 
@@ -138,35 +134,13 @@ public class SeriesServiceImpl implements SeriesService {
      * @throws ResourceNotFoundException if the user does not exist
      */
     @Override
-    public List<SeriesResponseDto> getSeriesByUser(Long userId) {
+    public List<SeriesResponseDto> getSeriesByUserId(Long userId) {
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         return seriesRepository.findByUser(author)
                 .stream()
-                .map(this::seriesToDto)
+                .map(seriesMapper::toResponseDto)
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Converts a {@link SeriesRequestDto} to a {@link Series} entity.
-     *
-     * @param seriesDto the DTO to convert
-     * @return the converted entity
-     */
-    private Series dtoToSeries(SeriesRequestDto seriesDto) {
-        return modelMapper.map(seriesDto, Series.class);
-    }
-
-    /**
-     * Converts a {@link Series} entity to a {@link SeriesResponseDto}.
-     *
-     * @param series the series entity to convert
-     * @return the converted DTO
-     */
-    private SeriesResponseDto seriesToDto(Series series) {
-        SeriesResponseDto response = modelMapper.map(series, SeriesResponseDto.class);
-        response.setAuthorId(series.getUser().getId());
-        return response;
     }
 }
