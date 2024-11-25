@@ -3,118 +3,162 @@ package com.example.blog_app.services.implement;
 import com.example.blog_app.exceptions.DuplicateResourceException;
 import com.example.blog_app.exceptions.ImmutableResourceException;
 import com.example.blog_app.exceptions.ResourceNotFoundException;
-import com.example.blog_app.models.dtos.PermissionDto;
-import com.example.blog_app.models.dtos.RoleDto;
+import com.example.blog_app.models.dtos.RoleRequestDto;
+import com.example.blog_app.models.dtos.RoleResponseDto;
 import com.example.blog_app.models.entities.Permission;
 import com.example.blog_app.models.entities.Role;
-import com.example.blog_app.models.entities.User;
+import com.example.blog_app.models.mappers.RoleMapper;
 import com.example.blog_app.repositories.PermissionRepository;
 import com.example.blog_app.repositories.RoleRepository;
-import com.example.blog_app.repositories.UserRepository;
 import com.example.blog_app.services.RoleService;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the {@link RoleService} interface for managing roles.
+ *
+ * <p>This service provides the business logic for creating, updating,
+ * retrieving, and deleting roles, as well as assigning or unassigning permissions to roles.</p>
+ */
 @Service
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
-    private final ModelMapper modelMapper;
     private final PermissionRepository permissionRepository;
+    private final RoleMapper roleMapper;
 
-    public RoleServiceImpl(RoleRepository roleRepository, ModelMapper modelMapper, PermissionRepository permissionRepository) {
+    /**
+     * Constructs the RoleServiceImpl with required dependencies.
+     *
+     * @param roleRepository       the repository for managing roles
+     * @param permissionRepository the repository for managing permissions
+     * @param roleMapper           the mapper for converting Role entities to/from DTOs
+     */
+    public RoleServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository, RoleMapper roleMapper) {
         this.roleRepository = roleRepository;
-        this.modelMapper = modelMapper;
         this.permissionRepository = permissionRepository;
+        this.roleMapper = roleMapper;
     }
 
+    /**
+     * Creates a new role.
+     *
+     * @param roleRequestDto the DTO containing role details for creation
+     * @return the created role as a DTO
+     * @throws DuplicateResourceException if the role already exists
+     */
     @Override
-    public RoleDto createRole(RoleDto roleDto) {
-        if (roleRepository.findByName(roleDto.getName()).isPresent()) {
-            throw new DuplicateResourceException("Role already exists: " + roleDto.getName());
+    public RoleResponseDto createRole(RoleRequestDto roleRequestDto) {
+        if (roleRepository.findByName(roleRequestDto.getName()).isPresent()) {
+            throw new DuplicateResourceException("Role already exists: " + roleRequestDto.getName());
         }
 
-        Role role = this.dtoToRole(roleDto);
+        Role role = roleMapper.toEntity(roleRequestDto);
+        handlePermissions(role, roleRequestDto.getPermissionIds());
         Role savedRole = roleRepository.save(role);
-        return this.roleToDto(savedRole);
+        return roleMapper.toResponseDto(savedRole);
     }
 
+    /**
+     * Updates an existing role.
+     *
+     * @param roleRequestDto the DTO containing updated role details
+     * @param roleId the id of the role to update
+     * @return the updated role as a DTO
+     * @throws ResourceNotFoundException  if the role does not exist
+     * @throws ImmutableResourceException if the role is immutable
+     */
     @Override
-    public RoleDto updateRole(RoleDto roleDto, String roleName) {
-        if(roleRepository.findByName(roleName).isEmpty()){
-            throw new ResourceNotFoundException("Role does not exist: " + roleDto.getName());
+    public RoleResponseDto updateRoleById(RoleRequestDto roleRequestDto, Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
+
+        if (role.isImmutable()) {
+            throw new ImmutableResourceException("Cannot modify default role: " + role.getName());
         }
 
-        if(roleRepository.findByName(roleName).get().isImmutable()){
-            throw new ImmutableResourceException("Can not modify default role: " + roleName);
-        }
+        roleMapper.updateRoleFromDto(roleRequestDto, role);
+        handlePermissions(role, roleRequestDto.getPermissionIds());
+        Role updatedRole = roleRepository.save(role);
 
-        Role role = roleRepository.findByName(roleName).get();
-        role.setName(roleDto.getName());
-        Role savedRole = roleRepository.save(role);
-        return this.roleToDto(savedRole);
+        return roleMapper.toResponseDto(updatedRole);
     }
 
+    /**
+     * Retrieves the details of a role by its ID.
+     *
+     * <p>Fetches the role's information, including its associated permissions.</p>
+     *
+     * @param roleId the ID of the role to retrieve
+     * @return the role's details as a response DTO
+     * @throws ResourceNotFoundException if the role does not exist
+     */
     @Override
-    public List<RoleDto> getAllRoles() {
-        return this.roleRepository.findAll()
+    public RoleResponseDto getRoleById(Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
+        return roleMapper.toResponseDto(role);
+    }
+
+    /**
+     * Retrieves all roles.
+     *
+     * @return a list of role DTOs representing all roles
+     */
+    @Override
+    public List<RoleResponseDto> getAllRoles() {
+        return roleRepository.findAll()
                 .stream()
-                .map(this::roleToDto)
+                .map(roleMapper::toResponseDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Deletes a role by its name.
+     *
+     * @param roleId the id of the role to delete
+     * @throws ResourceNotFoundException  if the role does not exist
+     * @throws ImmutableResourceException if the role is immutable
+     */
     @Override
-    public void deleteRole(String roleName) {
-        if(roleRepository.findByName(roleName).isEmpty()){
-            throw new ResourceNotFoundException("Role does not exist: " + roleName);
+    public void deleteRoleById(Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
+
+        if (role.isImmutable()) {
+            throw new ImmutableResourceException("Cannot remove default role: " + role.getName());
         }
 
-        if(roleRepository.findByName(roleName).get().isImmutable()){
-            throw new ImmutableResourceException("Can not remove default role: " + roleName);
-        }
-
-        Role role = roleRepository.findByName(roleName).get();
         roleRepository.delete(role);
     }
 
-    @Override
-    public List<PermissionDto> getRolePermissions(String roleName) {
-        Role role = this.roleRepository.findByName(roleName).
-                orElseThrow(() -> new ResourceNotFoundException("Role not found with name: " + roleName));
-        return role.getPermissions().stream()
-                .map(permission -> modelMapper.map(permission, PermissionDto.class))
-                .collect(Collectors.toList());
-    }
+    /**
+     * Handles the assignment of permissions to a role.
+     *
+     * <p>This method validates the list of permission IDs, ensures all provided IDs exist,
+     * and assigns the corresponding permissions to the role. If any invalid IDs are found,
+     * a {@link ResourceNotFoundException} is thrown with the list of invalid IDs.</p>
+     *
+     * @param role        the role entity to which permissions are assigned
+     * @param permissionIds the list of permission IDs to assign to the role
+     * @throws ResourceNotFoundException if any permission IDs are invalid
+     */
+    private void handlePermissions(Role role, Set<Long> permissionIds) {
+        if(permissionIds != null && !permissionIds.isEmpty()) {
+            Set<Permission> permissions = permissionRepository.findAllById(permissionIds).stream().collect(Collectors.toSet());
 
-    @Override
-    public void assignPermissionToRole(String roleName, String permissionName) {
-        Role role = this.roleRepository.findByName(roleName).
-                orElseThrow(() -> new ResourceNotFoundException("Role not found with name: " + roleName));
-        Permission permission = this.permissionRepository.findByName(permissionName).
-                orElseThrow(() -> new ResourceNotFoundException("Permission not found with ID: " + permissionName));
-        role.getPermissions().add(permission);
-        this.roleRepository.save(role);
-    }
+            Set<Long> invalidPermissionIds = permissionIds.stream()
+                    .filter(permissionId -> permissions.stream().noneMatch(permission -> permission.getId().equals(permissionId)))
+                    .collect(Collectors.toSet());
 
-    @Override
-    public void unassignPermissionToRole(String roleName, String permissionName) {
-        Role role = this.roleRepository.findByName(roleName).
-                orElseThrow(() -> new ResourceNotFoundException("Role not found with name: " + roleName));
-        Permission permission = this.permissionRepository.findByName(permissionName).
-                orElseThrow(() -> new ResourceNotFoundException("Permission not found with ID: " + permissionName));
-        role.getPermissions().remove(permission);
-        this.roleRepository.save(role);
-    }
+            if (!invalidPermissionIds.isEmpty()) {
+                throw new ResourceNotFoundException("Permissions not found with IDs: " + invalidPermissionIds);
+            }
 
-    private RoleDto roleToDto(Role role){
-        return modelMapper.map(role, RoleDto.class);
-    }
-
-    private Role dtoToRole(RoleDto roleDto){
-        return modelMapper.map(roleDto, Role.class);
+            role.setPermissions(permissions);
+        }
     }
 }

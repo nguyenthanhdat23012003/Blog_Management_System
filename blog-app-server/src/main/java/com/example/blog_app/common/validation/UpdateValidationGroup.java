@@ -19,5 +19,5 @@ package com.example.blog_app.common.validation;
  * @see CreateValidationGroup
  * @see jakarta.validation.groups.Default
  */
-public interface UpdateValidationGroup {
+public interface UpdateValidationGroup extends GeneralValidationGroup {
 }

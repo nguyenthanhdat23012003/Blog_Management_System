@@ -1,9 +1,11 @@
 package com.example.blog_app.repositories;
 
 import com.example.blog_app.models.entities.Series;
+import com.example.blog_app.models.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,5 +30,13 @@ public interface SeriesRepository extends JpaRepository<Series, Integer> {
      * @param id the ID of the series to search for.
      * @return an {@link Optional} containing the matching {@link Series}, or an empty {@link Optional} if no series is found.
      */
-    Optional<Series> findById(Integer id);
+    Optional<Series> findById(Long id);
+
+    /**
+     * Retrieves all series authored by a specific user.
+     *
+     * @param user the user whose series are to be retrieved
+     * @return a list of series authored by the user
+     */
+    List<Series> findByUser(User user);
 }

@@ -1,6 +1,7 @@
 package com.example.blog_app.models.dtos;
 
 import com.example.blog_app.common.util.DateTimeUtils;
+import com.example.blog_app.models.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -8,59 +9,62 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
- * Data Transfer Object (DTO) for returning user information in API responses.
+ * Data Transfer Object (DTO) for handling series-related responses.
  *
- * <p>This class provides user details such as ID, name, email, and about information.
- * It also formats creation and update timestamps to a human-readable string format
- * using {@link DateTimeUtils}.</p>
+ * <p>This class is used to provide series details in response payloads
+ * for operations such as retrieving a single series or a list of series.</p>
  *
- * <p>Example JSON response:</p>
+ * <p>It includes all the necessary fields to represent a series
+ * and can be extended if additional metadata is required.</p>
+ *
+ * <p>Example usage:</p>
  * <pre>
- * {
- *   "id": 1,
- *   "name": "John Doe",
- *   "email": "john.doe@example.com",
- *   "about": "A software engineer.",
- *   "create_at": "Sun, Nov 19 2024 14:23:45 UTC",
- *   "update_at": "Mon, Nov 20 2024 16:15:30 UTC"
+ * {@code
+ * SeriesResponseDto series = new SeriesResponseDto();
+ * series.setId(1L);
+ * series.setTitle("Java Basics");
+ * series.setDescription("A series of blogs introducing basic concepts in Java.");
+ * series.setAuthorId(1L);
  * }
  * </pre>
  */
-@NoArgsConstructor
 @Getter
 @Setter
-public class UserResponseDto {
+@NoArgsConstructor
+public class SeriesResponseDto {
 
     /**
-     * The unique identifier of the user.
+     * The unique identifier of the series.
+     *
+     * <p>Generated automatically when the series is created.</p>
      */
-    private int id;
+    private Long id;
 
     /**
-     * The name of the user.
+     * The title of the series.
+     *
+     * <p>This field represents the name or label of the series.</p>
      */
-    private String name;
+    private String title;
 
     /**
-     * The email address of the user.
+     * The description of the series.
+     *
+     * <p>Provides additional details or context about the series.</p>
      */
-    private String email;
+    private String description;
 
     /**
-     * A brief description or bio about the user.
+     * The ID of the author who created the series.
+     *
+     * <p>References the {@link User} who owns the series.</p>
      */
-    private String about;
+    private Long authorId;
 
     /**
-     * The roles set of the user
-     */
-    private Set<Long> roleIds;
-
-    /**
-     * The timestamp when the user was created, stored as a {@link LocalDateTime}.
+     * The timestamp when the series was created, stored as a {@link LocalDateTime}.
      *
      * <p>This field is ignored in the JSON response and is formatted into a string
      * using {@link #getCreatedAtFormatted()}.</p>
@@ -69,7 +73,7 @@ public class UserResponseDto {
     private LocalDateTime createdAt;
 
     /**
-     * The timestamp when the user was last updated, stored as a {@link LocalDateTime}.
+     * The timestamp when the series was last updated, stored as a {@link LocalDateTime}.
      *
      * <p>This field is ignored in the JSON response and is formatted into a string
      * using {@link #getUpdatedAtFormatted()}.</p>

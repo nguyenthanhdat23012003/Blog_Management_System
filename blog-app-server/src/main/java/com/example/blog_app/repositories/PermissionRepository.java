@@ -20,6 +20,17 @@ import java.util.Optional;
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
     /**
+     * Finds a permission by its id.
+     *
+     * <p>This method retrieves a {@link Permission} entity that matches the given
+     * id, if one exists.</p>
+     *
+     * @param id the id of the permission to search for.
+     * @return an {@link Optional} containing the matching {@link Permission}, or an empty {@link Optional} if no permission is found.
+     */
+    Optional<Permission> findById(Long id);
+
+    /**
      * Finds a permission by its name.
      *
      * <p>This method retrieves a {@link Permission} entity that matches the given
