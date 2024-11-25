@@ -1,12 +1,16 @@
 package com.example.blog_app.models.dtos;
 
 import com.example.blog_app.common.validation.CreateValidationGroup;
+import com.example.blog_app.common.validation.GeneralValidationGroup;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 /**
  * Data Transfer Object (DTO) for handling user-related requests.
@@ -37,6 +41,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = false)
 public class UserRequestDto {
 
     /**
@@ -45,7 +50,7 @@ public class UserRequestDto {
      * <p>Must be between 3 and 100 characters.</p>
      */
     @NotEmpty(message = "Name cannot be empty", groups = CreateValidationGroup.class)
-    @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters")
+    @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters", groups = GeneralValidationGroup.class)
     private String name;
 
     /**
@@ -54,7 +59,7 @@ public class UserRequestDto {
      * <p>Must be in a valid email format.</p>
      */
     @NotEmpty(message = "Email cannot be empty", groups = CreateValidationGroup.class)
-    @Email(message = "Email should be valid")
+    @Email(message = "Email should be valid", groups = GeneralValidationGroup.class)
     private String email;
 
     /**
@@ -63,7 +68,7 @@ public class UserRequestDto {
      * <p>Must be at least 6 characters long.</p>
      */
     @NotEmpty(message = "Password cannot be empty", groups = CreateValidationGroup.class)
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @Size(min = 6, message = "Password must be at least 6 characters long", groups = GeneralValidationGroup.class)
     private String password;
 
     /**
@@ -71,6 +76,12 @@ public class UserRequestDto {
      *
      * <p>Optional. Cannot exceed 500 characters.</p>
      */
-    @Size(max = 500, message = "About section cannot exceed 500 characters")
+    @Size(max = 500, message = "About section cannot exceed 500 characters", groups = GeneralValidationGroup.class)
     private String about;
+
+    /**
+     * The roles set of the user
+     */
+    @NotEmpty(message = "Role needs to be assigned to user", groups = CreateValidationGroup.class)
+    private Set<Long> roleIds;
 }
