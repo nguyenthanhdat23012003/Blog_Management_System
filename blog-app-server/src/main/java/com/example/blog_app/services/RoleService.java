@@ -1,7 +1,7 @@
 package com.example.blog_app.services;
 
-import com.example.blog_app.models.dtos.RoleRequestDto;
-import com.example.blog_app.models.dtos.RoleResponseDto;
+import com.example.blog_app.models.dtos.role.RoleRequestDto;
+import com.example.blog_app.models.dtos.role.RoleResponseDto;
 
 import java.util.List;
 

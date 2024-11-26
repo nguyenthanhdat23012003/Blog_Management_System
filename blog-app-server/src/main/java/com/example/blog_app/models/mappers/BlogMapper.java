@@ -1,8 +1,8 @@
 package com.example.blog_app.models.mappers;
 
 import com.example.blog_app.common.util.JsonConverter;
-import com.example.blog_app.models.dtos.BlogRequestDto;
-import com.example.blog_app.models.dtos.BlogResponseDto;
+import com.example.blog_app.models.dtos.blog.BlogRequestDto;
+import com.example.blog_app.models.dtos.blog.BlogResponseDto;
 import com.example.blog_app.models.entities.Blog;
 import com.example.blog_app.models.entities.Category;
 import org.mapstruct.*;

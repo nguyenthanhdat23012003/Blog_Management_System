@@ -1,7 +1,7 @@
 package com.example.blog_app.models.mappers;
 
-import com.example.blog_app.models.dtos.RoleRequestDto;
-import com.example.blog_app.models.dtos.RoleResponseDto;
+import com.example.blog_app.models.dtos.role.RoleRequestDto;
+import com.example.blog_app.models.dtos.role.RoleResponseDto;
 import com.example.blog_app.models.entities.Permission;
 import com.example.blog_app.models.entities.Role;
 import org.mapstruct.*;

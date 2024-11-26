@@ -2,9 +2,9 @@ package com.example.blog_app.controllers;
 
 import com.example.blog_app.common.validation.CreateValidationGroup;
 import com.example.blog_app.common.validation.UpdateValidationGroup;
-import com.example.blog_app.models.dtos.PermissionRequestDto;
-import com.example.blog_app.models.dtos.RoleRequestDto;
-import com.example.blog_app.models.dtos.RoleResponseDto;
+import com.example.blog_app.models.dtos.permission.PermissionRequestDto;
+import com.example.blog_app.models.dtos.role.RoleRequestDto;
+import com.example.blog_app.models.dtos.role.RoleResponseDto;
 import com.example.blog_app.services.RoleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
