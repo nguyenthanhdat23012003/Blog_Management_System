@@ -9,7 +9,6 @@ import com.example.blog_app.models.mappers.SeriesMapper;
 import com.example.blog_app.repositories.SeriesRepository;
 import com.example.blog_app.repositories.UserRepository;
 import com.example.blog_app.services.SeriesService;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

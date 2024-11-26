@@ -14,6 +14,7 @@ import com.example.blog_app.services.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -172,7 +173,7 @@ public class UserServiceImpl implements UserService {
      */
     private void handleRoles(User user, Set<Long> roleIds) {
         if (roleIds != null && !roleIds.isEmpty()) {
-            Set<Role> roles = roleRepository.findAllById(roleIds).stream().collect(Collectors.toSet());
+            Set<Role> roles = new HashSet<>(roleRepository.findAllById(roleIds));
 
             Set<Long> invalidRoleIds = roleIds.stream()
                     .filter(roleId -> roles.stream().noneMatch(role -> role.getId().equals(roleId)))

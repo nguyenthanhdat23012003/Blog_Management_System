@@ -17,7 +17,7 @@ import java.util.Optional;
  * <p>Custom methods can also be defined here to support specific queries.</p>
  */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Integer> {
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     /**
      * Finds a category by its ID.
