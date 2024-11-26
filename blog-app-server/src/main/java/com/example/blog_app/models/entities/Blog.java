@@ -49,7 +49,7 @@ public class Blog {
      *
      * <p>Stored as a JSON string in the database.</p>
      */
-    @Column(name = "content", columnDefinition = "JSON")
+    @Column(name = "content")
     private String content;
 
     /**

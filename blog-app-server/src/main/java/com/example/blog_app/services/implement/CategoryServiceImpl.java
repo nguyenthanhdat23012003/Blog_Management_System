@@ -10,7 +10,6 @@ import com.example.blog_app.models.mappers.CategoryMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link CategoryService} interface for managing categories.

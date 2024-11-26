@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/permissions/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
                         .requestMatchers("/api/series/**").permitAll()
+                        .requestMatchers("/api/blogs/**").permitAll()
                         .anyRequest().authenticated() // Yêu cầu xác thực cho các endpoint khác
                 );
         return http.build();
