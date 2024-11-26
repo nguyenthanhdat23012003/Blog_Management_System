@@ -1,7 +1,7 @@
 package com.example.blog_app.services;
 
-import com.example.blog_app.models.dtos.PermissionRequestDto;
-import com.example.blog_app.models.dtos.PermissionResponseDto;
+import com.example.blog_app.models.dtos.permission.PermissionRequestDto;
+import com.example.blog_app.models.dtos.permission.PermissionResponseDto;
 
 import java.util.List;
 

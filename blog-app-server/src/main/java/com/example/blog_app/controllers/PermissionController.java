@@ -1,7 +1,7 @@
 package com.example.blog_app.controllers;
 
-import com.example.blog_app.models.dtos.PermissionRequestDto;
-import com.example.blog_app.models.dtos.PermissionResponseDto;
+import com.example.blog_app.models.dtos.permission.PermissionRequestDto;
+import com.example.blog_app.models.dtos.permission.PermissionResponseDto;
 import com.example.blog_app.services.PermissionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

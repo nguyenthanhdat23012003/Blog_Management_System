@@ -1,7 +1,7 @@
 package com.example.blog_app.models.mappers;
 
-import com.example.blog_app.models.dtos.UserRequestDto;
-import com.example.blog_app.models.dtos.UserResponseDto;
+import com.example.blog_app.models.dtos.user.UserRequestDto;
+import com.example.blog_app.models.dtos.user.UserResponseDto;
 import com.example.blog_app.models.entities.Role;
 import com.example.blog_app.models.entities.User;
 import org.mapstruct.*;

@@ -2,8 +2,8 @@ package com.example.blog_app.controllers;
 
 import com.example.blog_app.common.validation.CreateValidationGroup;
 import com.example.blog_app.common.validation.UpdateValidationGroup;
-import com.example.blog_app.models.dtos.CategoryRequestDto;
-import com.example.blog_app.models.dtos.CategoryResponseDto;
+import com.example.blog_app.models.dtos.category.CategoryRequestDto;
+import com.example.blog_app.models.dtos.category.CategoryResponseDto;
 import com.example.blog_app.services.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

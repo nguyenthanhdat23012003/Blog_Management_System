@@ -2,8 +2,8 @@ package com.example.blog_app.controllers;
 
 import com.example.blog_app.common.validation.CreateValidationGroup;
 import com.example.blog_app.common.validation.UpdateValidationGroup;
-import com.example.blog_app.models.dtos.SeriesRequestDto;
-import com.example.blog_app.models.dtos.SeriesResponseDto;
+import com.example.blog_app.models.dtos.series.SeriesRequestDto;
+import com.example.blog_app.models.dtos.series.SeriesResponseDto;
 import com.example.blog_app.services.SeriesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

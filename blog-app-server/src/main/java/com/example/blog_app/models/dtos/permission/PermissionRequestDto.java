@@ -1,4 +1,4 @@
-package com.example.blog_app.models.dtos;
+package com.example.blog_app.models.dtos.permission;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

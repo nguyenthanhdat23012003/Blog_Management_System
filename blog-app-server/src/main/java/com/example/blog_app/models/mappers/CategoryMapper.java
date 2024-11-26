@@ -1,7 +1,7 @@
 package com.example.blog_app.models.mappers;
 
-import com.example.blog_app.models.dtos.CategoryRequestDto;
-import com.example.blog_app.models.dtos.CategoryResponseDto;
+import com.example.blog_app.models.dtos.category.CategoryRequestDto;
+import com.example.blog_app.models.dtos.category.CategoryResponseDto;
 import com.example.blog_app.models.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,8 +1,8 @@
 package com.example.blog_app.services.implement;
 
 import com.example.blog_app.exceptions.ResourceNotFoundException;
-import com.example.blog_app.models.dtos.BlogRequestDto;
-import com.example.blog_app.models.dtos.BlogResponseDto;
+import com.example.blog_app.models.dtos.blog.BlogRequestDto;
+import com.example.blog_app.models.dtos.blog.BlogResponseDto;
 import com.example.blog_app.models.entities.Blog;
 import com.example.blog_app.models.entities.Category;
 import com.example.blog_app.models.entities.Series;

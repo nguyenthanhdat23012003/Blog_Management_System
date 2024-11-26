@@ -36,7 +36,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * <p>This method retrieves a {@link Role} entity that matches the given
      * id, if one exists.</p>
      *
-     * @param id the id of the role to search for.
+     * @param roleId the id of the role to search for.
      * @return an {@link Optional} containing the matching {@link Role}, or an empty {@link Optional} if no role is found.
      */
     Optional<Role> findById(Long roleId);

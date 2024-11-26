@@ -1,7 +1,7 @@
 package com.example.blog_app.services;
 
-import com.example.blog_app.models.dtos.BlogRequestDto;
-import com.example.blog_app.models.dtos.BlogResponseDto;
+import com.example.blog_app.models.dtos.blog.BlogRequestDto;
+import com.example.blog_app.models.dtos.blog.BlogResponseDto;
 
 import java.util.List;
 

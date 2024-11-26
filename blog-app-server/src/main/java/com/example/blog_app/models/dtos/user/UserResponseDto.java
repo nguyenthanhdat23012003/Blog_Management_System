@@ -1,4 +1,4 @@
-package com.example.blog_app.models.dtos;
+package com.example.blog_app.models.dtos.user;
 
 import com.example.blog_app.common.util.DateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;

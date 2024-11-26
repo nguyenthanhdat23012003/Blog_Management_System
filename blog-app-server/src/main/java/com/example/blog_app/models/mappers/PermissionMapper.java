@@ -1,7 +1,7 @@
 package com.example.blog_app.models.mappers;
 
-import com.example.blog_app.models.dtos.PermissionRequestDto;
-import com.example.blog_app.models.dtos.PermissionResponseDto;
+import com.example.blog_app.models.dtos.permission.PermissionRequestDto;
+import com.example.blog_app.models.dtos.permission.PermissionResponseDto;
 import com.example.blog_app.models.entities.Permission;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;

@@ -1,4 +1,4 @@
-package com.example.blog_app.models.dtos;
+package com.example.blog_app.models.dtos.role;
 
 import com.example.blog_app.common.validation.CreateValidationGroup;
 import jakarta.validation.constraints.NotEmpty;
