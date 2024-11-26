@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * Entity representing a blog post in the application.
@@ -49,7 +50,7 @@ public class Blog {
      *
      * <p>Stored as a JSON string in the database.</p>
      */
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "JSON")
     private String content;
 
     /**

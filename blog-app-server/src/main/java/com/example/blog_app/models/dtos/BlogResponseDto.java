@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -55,7 +56,7 @@ public class BlogResponseDto {
      *
      * <p>Stored as a JSON string.</p>
      */
-    private String content;
+    private Map<String, Object> content;
 
     /**
      * The ID of the author who created the blog post.

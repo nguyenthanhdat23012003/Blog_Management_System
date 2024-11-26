@@ -60,7 +60,7 @@ public class BlogRequestDto {
      * <p>Must not be empty. Stored as a JSON string in the database.</p>
      */
     @NotEmpty(message = "Content is required", groups = CreateValidationGroup.class)
-    private String content;
+    private Map<String, Object> content;
 
     /**
      * The ID of the author who created the blog post.
