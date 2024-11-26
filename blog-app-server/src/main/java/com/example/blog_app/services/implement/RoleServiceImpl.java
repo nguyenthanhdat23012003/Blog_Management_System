@@ -13,6 +13,7 @@ import com.example.blog_app.repositories.RoleRepository;
 import com.example.blog_app.services.RoleService;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -148,7 +149,7 @@ public class RoleServiceImpl implements RoleService {
      */
     private void handlePermissions(Role role, Set<Long> permissionIds) {
         if(permissionIds != null && !permissionIds.isEmpty()) {
-            Set<Permission> permissions = permissionRepository.findAllById(permissionIds).stream().collect(Collectors.toSet());
+            Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(permissionIds));
 
             Set<Long> invalidPermissionIds = permissionIds.stream()
                     .filter(permissionId -> permissions.stream().noneMatch(permission -> permission.getId().equals(permissionId)))

@@ -33,7 +33,7 @@ public class CategoryResponseDto {
      *
      * <p>Generated automatically when the category is created.</p>
      */
-    private Integer id;
+    private Long id;
 
     /**
      * The title of the category.

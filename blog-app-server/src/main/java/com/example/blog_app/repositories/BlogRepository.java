@@ -1,6 +1,9 @@
 package com.example.blog_app.repositories;
 
 import com.example.blog_app.models.entities.Blog;
+import com.example.blog_app.models.entities.Category;
+import com.example.blog_app.models.entities.Series;
+import com.example.blog_app.models.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,4 +32,7 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
      * @return an {@link Optional} containing the matching {@link Blog}, or an empty {@link Optional} if no blog is found.
      */
     Optional<Blog> findById(Long id);
+    Optional<Blog> findByUser(User user);
+    Optional<Blog> findBySeries(Series series);
+    Optional<Blog> findByCategoriesContains(Category category);
 }

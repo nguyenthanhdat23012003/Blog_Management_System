@@ -19,7 +19,7 @@ import java.util.Optional;
  * <p>Custom methods can also be defined here to support specific queries.</p>
  */
 @Repository
-public interface SeriesRepository extends JpaRepository<Series, Integer> {
+public interface SeriesRepository extends JpaRepository<Series, Long> {
 
     /**
      * Finds a series by its ID.
