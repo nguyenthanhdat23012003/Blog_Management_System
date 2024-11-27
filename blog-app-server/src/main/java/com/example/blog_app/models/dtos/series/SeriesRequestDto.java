@@ -59,8 +59,7 @@ public class SeriesRequestDto {
     /**
      * The ID of the author who created the series.
      *
-     * <p>This field is mandatory and references the {@link User} who owns the series.</p>
+     * <p>This field references the {@link User} who owns the series.</p>
      */
-    @NotNull(message = "Author ID is required", groups = CreateValidationGroup.class)
     private Long authorId;
 }

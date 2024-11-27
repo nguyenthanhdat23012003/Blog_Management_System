@@ -3,6 +3,7 @@ package com.example.blog_app.services.implement;
 import com.example.blog_app.exceptions.DuplicateResourceException;
 import com.example.blog_app.exceptions.ImmutableResourceException;
 import com.example.blog_app.exceptions.ResourceNotFoundException;
+import com.example.blog_app.exceptions.UnauthorizedException;
 import com.example.blog_app.models.dtos.user.UserRequestDto;
 import com.example.blog_app.models.dtos.user.UserResponseDto;
 import com.example.blog_app.models.entities.Role;
@@ -10,6 +11,7 @@ import com.example.blog_app.models.entities.User;
 import com.example.blog_app.models.mappers.UserMapper;
 import com.example.blog_app.repositories.RoleRepository;
 import com.example.blog_app.repositories.UserRepository;
+import com.example.blog_app.security.SecurityUtils;
 import com.example.blog_app.services.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,8 @@ import java.util.stream.Collectors;
  * including creating, updating, retrieving, and deleting users, as well as
  * assigning roles to users.</p>
  *
- * <p>All interactions with the database are managed through repositories,
- * while domain-specific logic (e.g., handling immutable users) is implemented
- * within this service.</p>
+ * <p>Domain-specific validations (e.g., immutable users or permission checks)
+ * are applied before persisting data to the database.</p>
  */
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,7 +47,8 @@ public class UserServiceImpl implements UserService {
      * @param passwordEncoder  the password encoder for encrypting user passwords
      * @param userMapper       the mapper for converting between User entities and DTOs
      */
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+                           BCryptPasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -78,23 +80,22 @@ public class UserServiceImpl implements UserService {
     /**
      * Updates an existing user's details.
      *
-     * <p>Updates the specified fields from the provided DTO, while retaining the
-     * user's existing data for fields not specified. If the user is marked as
-     * immutable, an exception is thrown.</p>
+     * <p>Applies validation to check if the user is immutable or if the current user
+     * has the necessary permissions to perform the update.</p>
      *
      * @param userDto the DTO containing the updated user details
      * @param userId  the ID of the user to update
      * @return the updated user's details as a {@link UserResponseDto}
      * @throws ResourceNotFoundException  if the user with the given ID does not exist
      * @throws ImmutableResourceException if the user is immutable
+     * @throws UnauthorizedException      if the current user lacks permission
      */
     @Override
     public UserResponseDto updateUserById(UserRequestDto userDto, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-        if (user.isImmutable()) {
-            throw new ImmutableResourceException("User immutable");
-        }
+        User user = getUserEntityById(userId);
+        checkImmutability(user);
+        User currentUser = getCurrentUser();
+        validatePermissionToUpdate(user, currentUser);
         userMapper.updateUserFromDto(userDto, user);
         handlePassword(user, userDto.getPassword());
         handleRoles(user, userDto.getRoleIds());
@@ -111,8 +112,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserResponseDto getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+        User user = getUserEntityById(userId);
         return userMapper.toResponseDto(user);
     }
 
@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Deletes a user by their ID.
      *
-     * <p>If the user is marked as immutable, an exception is thrown to prevent deletion.</p>
+     * <p>Validates the user's immutability status before performing deletion.</p>
      *
      * @param userId the ID of the user to delete
      * @throws ResourceNotFoundException  if the user with the given ID does not exist
@@ -139,18 +139,15 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void deleteUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
-        if (user.isImmutable()) {
-            throw new ImmutableResourceException("User cannot be deleted because it is immutable");
-        }
+        User user = getUserEntityById(userId);
+        checkImmutability(user);
         userRepository.delete(user);
     }
 
     /**
      * Encrypts the user's password if a new password is provided.
      *
-     * <p>This method ensures that the password is hashed before being stored in the database.</p>
+     * <p>Ensures that the password is securely hashed before persisting.</p>
      *
      * @param user     the user entity to update
      * @param password the raw password to encrypt
@@ -164,8 +161,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Assigns roles to the user based on the provided list of role IDs.
      *
-     * <p>Each role ID is validated against the database to ensure it exists before
-     * being assigned to the user.</p>
+     * <p>Validates the existence of roles in the database and assigns them to the user.</p>
      *
      * @param user    the user entity to update
      * @param roleIds the list of role IDs to assign
@@ -174,16 +170,75 @@ public class UserServiceImpl implements UserService {
     private void handleRoles(User user, Set<Long> roleIds) {
         if (roleIds != null && !roleIds.isEmpty()) {
             Set<Role> roles = new HashSet<>(roleRepository.findAllById(roleIds));
-
             Set<Long> invalidRoleIds = roleIds.stream()
                     .filter(roleId -> roles.stream().noneMatch(role -> role.getId().equals(roleId)))
                     .collect(Collectors.toSet());
-
             if (!invalidRoleIds.isEmpty()) {
                 throw new ResourceNotFoundException("Roles not found with IDs: " + invalidRoleIds);
             }
-
             user.setRoles(roles);
+        }
+    }
+
+    /**
+     * Validates if the current user has permission to update another user's details.
+     *
+     * <p>Only admins or the user themselves can perform updates.</p>
+     *
+     * @param userToBeUpdated the user to be updated
+     * @param currentUser     the current authenticated user
+     * @throws UnauthorizedException if the current user lacks permission
+     */
+    private void validatePermissionToUpdate(User userToBeUpdated, User currentUser) {
+        if (!isAdmin(currentUser) && !(userToBeUpdated.getId() == currentUser.getId())) {
+            throw new UnauthorizedException("You do not have permission to update this user.");
+        }
+    }
+
+    /**
+     * Checks if the given user is an admin.
+     *
+     * @param user the user entity to check
+     * @return {@code true} if the user has the ADMIN role, otherwise {@code false}
+     */
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase("ADMIN"));
+    }
+
+    /**
+     * Retrieves the currently authenticated user.
+     *
+     * @return the current user entity
+     * @throws ResourceNotFoundException if the current user cannot be found
+     */
+    private User getCurrentUser() {
+        String currentUserEmail = SecurityUtils.getCurrentUserEmail();
+        return userRepository.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Current user not found with email: " + currentUserEmail));
+    }
+
+    /**
+     * Retrieves a user entity by its ID.
+     *
+     * @param userId the ID of the user to retrieve
+     * @return the user entity
+     * @throws ResourceNotFoundException if the user with the given ID does not exist
+     */
+    private User getUserEntityById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+    }
+
+    /**
+     * Validates if the user is immutable and throws an exception if so.
+     *
+     * @param user the user entity to check
+     * @throws ImmutableResourceException if the user is immutable
+     */
+    private void checkImmutability(User user) {
+        if (user.isImmutable()) {
+            throw new ImmutableResourceException("User is immutable and cannot be modified.");
         }
     }
 }

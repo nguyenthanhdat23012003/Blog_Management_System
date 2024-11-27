@@ -79,12 +79,13 @@ public class DefaultDataInitializer {
                 "VIEW_USER", "CREATE_USER", "UPDATE_USER", "DELETE_USER",
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
                 "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY",
-                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
+                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES",
+                "ADMINISTRATOR"
         ));
 
         assignPermissionsToRole(userRole, List.of(
+                "UPDATE_USER",
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
-                "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY",
                 "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
         ));
 
@@ -99,7 +100,8 @@ public class DefaultDataInitializer {
                 "VIEW_USER", "CREATE_USER", "UPDATE_USER", "DELETE_USER",
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
                 "VIEW_CATEGORY", "CREATE_CATEGORY", "UPDATE_CATEGORY", "DELETE_CATEGORY",
-                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
+                "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES",
+                "ADMINISTRATOR"
         );
 
         for (String permissionName : permissions) {

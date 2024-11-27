@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -57,10 +59,11 @@ public class Blog {
      * The author of the blog post.
      *
      * <p>Defines a many-to-one relationship with the {@link User} entity.</p>
-     * <p>This field cannot be null and references the author's ID.</p>
+     * <p>This field references the author's ID.</p>
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private User user;
 
     /**
@@ -84,7 +87,8 @@ public class Blog {
      * The relationship is not mandatory, as a blog can exist without being part of a series.</p>
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_id") // Nullable foreign key to represent optional series association
+    @JoinColumn(name = "series_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT)) // Nullable foreign key to represent optional series association
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Series series;
 
     /**
