@@ -1,6 +1,7 @@
 package com.example.blog_app.services.implement;
 
 import com.example.blog_app.exceptions.ResourceNotFoundException;
+import com.example.blog_app.exceptions.UnauthorizedException;
 import com.example.blog_app.models.dtos.blog.BlogRequestDto;
 import com.example.blog_app.models.dtos.blog.BlogResponseDto;
 import com.example.blog_app.models.entities.Blog;
@@ -12,6 +13,7 @@ import com.example.blog_app.repositories.BlogRepository;
 import com.example.blog_app.repositories.CategoryRepository;
 import com.example.blog_app.repositories.SeriesRepository;
 import com.example.blog_app.repositories.UserRepository;
+import com.example.blog_app.security.SecurityUtils;
 import com.example.blog_app.services.BlogService;
 import org.springframework.stereotype.Service;
 
@@ -64,10 +66,24 @@ public class BlogServiceImpl implements BlogService {
      * @param blogDto the DTO containing blog details for creation
      * @return the created blog's details as a response DTO
      * @throws ResourceNotFoundException if the author, categories, or series do not exist
+     * @throws UnauthorizedException if a non-admin user attempts to assign an author
      */
     @Override
     public BlogResponseDto createBlog(BlogRequestDto blogDto) {
-        User author = getUserById(blogDto.getAuthorId());
+        String currentUserEmail = SecurityUtils.getCurrentUserEmail();
+        User currentUser = getUserByEmail(currentUserEmail);
+
+        User author;
+        if (blogDto.getAuthorId() != null) {
+            if (isAdmin(currentUser)) {
+                author = getUserById(blogDto.getAuthorId());
+            } else {
+                throw new UnauthorizedException("Only admins can assign an author.");
+            }
+        } else {
+            author = currentUser;
+        }
+
         Blog blog = blogMapper.toEntity(blogDto);
         blog.setUser(author);
 
@@ -85,11 +101,14 @@ public class BlogServiceImpl implements BlogService {
      * @param blogId  the ID of the blog to update
      * @return the updated blog's details as a response DTO
      * @throws ResourceNotFoundException if the blog, categories, or series do not exist
+     * @throws UnauthorizedException if the current user lacks permission to update
      */
     @Override
     public BlogResponseDto updateBlogById(BlogRequestDto blogDto, Long blogId) {
-        Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with ID: " + blogId));
+        Blog blog = getBlogEntityById(blogId);
+
+        User currentUser = getUserByEmail(SecurityUtils.getCurrentUserEmail());
+        checkPermission(blog, currentUser);
 
         blogMapper.updateBlogFromDto(blogDto, blog);
 
@@ -122,8 +141,7 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public BlogResponseDto getBlogById(Long blogId) {
-        Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with ID: " + blogId));
+        Blog blog = getBlogEntityById(blogId);
         return blogMapper.toResponseDto(blog);
     }
 
@@ -132,11 +150,15 @@ public class BlogServiceImpl implements BlogService {
      *
      * @param blogId the ID of the blog to delete
      * @throws ResourceNotFoundException if the blog does not exist
+     * @throws UnauthorizedException if the current user lacks permission to delete
      */
     @Override
     public void deleteBlogById(Long blogId) {
-        Blog blog = blogRepository.findById(blogId)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with ID: " + blogId));
+        Blog blog = getBlogEntityById(blogId);
+
+        User currentUser = getUserByEmail(SecurityUtils.getCurrentUserEmail());
+        checkPermission(blog, currentUser);
+
         blogRepository.delete(blog);
     }
 
@@ -258,5 +280,55 @@ public class BlogServiceImpl implements BlogService {
         } else {
             blog.setSeries(null);
         }
+    }
+
+    /**
+     * Checks if a user has the ADMIN role.
+     *
+     * @param user the user entity
+     * @return {@code true} if the user has ADMIN role, otherwise {@code false}
+     */
+    private boolean isAdmin(User user) {
+        return user.getRoles().stream()
+                .anyMatch(role -> role.getName().equalsIgnoreCase("ADMIN"));
+    }
+
+    /**
+     * Validates whether the current user has permission to perform an action on a blog.
+     *
+     * <p>Admins or the blog's author have permission.</p>
+     *
+     * @param blog the blog entity
+     * @param user the user entity attempting the action
+     * @throws UnauthorizedException if the user lacks the required permissions
+     */
+    private void checkPermission(Blog blog, User user) {
+        if (!isAdmin(user) && !(blog.getUser().getId() == user.getId())) {
+            throw new UnauthorizedException("You do not have permission to perform this action.");
+        }
+    }
+
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email the email of the user
+     * @return the user entity
+     * @throws ResourceNotFoundException if the user does not exist
+     */
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
+
+    /**
+     * Retrieves a blog entity by its ID.
+     *
+     * @param blogId the ID of the blog
+     * @return the blog entity
+     * @throws ResourceNotFoundException if the blog does not exist
+     */
+    private Blog getBlogEntityById(Long blogId) {
+        return blogRepository.findById(blogId)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found with ID: " + blogId));
     }
 }

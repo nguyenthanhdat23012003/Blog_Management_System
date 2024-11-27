@@ -65,9 +65,8 @@ public class BlogRequestDto {
     /**
      * The ID of the author who created the blog post.
      *
-     * <p>This field is mandatory and references the {@link User} who owns the blog.</p>
+     * <p>This field references the {@link User} who owns the blog.</p>
      */
-    @NotNull(message = "Author ID is required", groups = CreateValidationGroup.class)
     private Long authorId;
 
     /**

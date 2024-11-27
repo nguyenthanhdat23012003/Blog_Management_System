@@ -119,18 +119,18 @@ public class User {
     /**
      * List of blogs authored by the user.
      *
-     * <p>Mapped by {@link Blog#user}, with cascading CRUD operations and orphan removal enabled.</p>
+     * <p>Mapped by {@link Blog#user}</p>
      * <p>Uses LAZY loading to fetch blogs only when accessed.</p>
      */
-    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private Set<Blog> blogs = new HashSet<>();
 
     /**
      * List of series authored by the user.
      *
-     * <p>Mapped by {@link Series#user}, with cascading CRUD operations and orphan removal enabled.</p>
+     * <p>Mapped by {@link Series#user}</p>
      * <p>Uses LAZY loading to fetch series only when accessed.</p>
      */
-    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private Set<Series> series = new HashSet<>();
 }
