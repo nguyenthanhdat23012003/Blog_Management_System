@@ -1,10 +1,14 @@
 package com.example.blog_app.config;
 
+import com.example.blog_app.security.CustomAuthenticationEntryPoint;
+import com.example.blog_app.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Configuration class for Spring Security.
@@ -35,16 +39,16 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @Configuration
 public class SecurityConfig {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+    }
     /**
      * Configures the security filter chain for HTTP requests.
-     *
-     * <p>Disables CSRF protection and defines authorization rules:
-     * <ul>
-     *   <li>Allows public access to <code>/api/users/**</code>, <code>/api/roles/**</code>, and <code>/api/permissions/**</code>.</li>
-     *   <li>Requires authentication for all other requests.</li>
-     * </ul>
-     * </p>
      *
      * @param http the {@link HttpSecurity} object used to configure security
      * @return the configured {@link SecurityFilterChain}
@@ -55,14 +59,37 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Vô hiệu hóa CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/**").permitAll()
-                        .requestMatchers("/api/roles/**").permitAll()
-                        .requestMatchers("/api/permissions/**").permitAll()
-                        .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/series/**").permitAll()
-                        .requestMatchers("/api/blogs/**").permitAll()
-                        .anyRequest().authenticated() // Yêu cầu xác thực cho các endpoint khác
-                );
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/roles/**").hasAuthority("ADMINISTRATOR")
+                        .requestMatchers("/api/permissions/**").hasAuthority("ADMINISTRATOR")
+
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/series/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/blogs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasAuthority("VIEW_USER")
+
+                        .requestMatchers(HttpMethod.POST,"/api/categories/**").hasAuthority("CREATE_CATEGORY")
+                        .requestMatchers(HttpMethod.PUT,"/api/categories/**").hasAuthority("UPDATE_CATEGORY")
+                        .requestMatchers(HttpMethod.DELETE,"/api/categories/**").hasAuthority("DELETE_CATEGORY")
+
+                        .requestMatchers(HttpMethod.POST, "/api/series/**").hasAuthority("CREATE_SERIES")
+                        .requestMatchers(HttpMethod.PUT, "/api/series/**").hasAuthority("UPDATE_SERIES")
+                        .requestMatchers(HttpMethod.DELETE, "/api/series/**").hasAuthority("DELETE_SERIES")
+
+                        .requestMatchers(HttpMethod.POST, "/api/blogs/**").hasAuthority("CREATE_BLOG")
+                        .requestMatchers(HttpMethod.PUT, "/api/blogs/**").hasAuthority("UPDATE_BLOG")
+                        .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").hasAuthority("DELETE_BLOG")
+
+                        .requestMatchers(HttpMethod.POST, "/api/users/**").hasAuthority("CREATE_USER")
+                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasAuthority("UPDATE_USER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasAuthority("DELETE_USER")
+
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(customAuthenticationEntryPoint) // Sử dụng Custom Entry Point
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);;
         return http.build();
     }
 

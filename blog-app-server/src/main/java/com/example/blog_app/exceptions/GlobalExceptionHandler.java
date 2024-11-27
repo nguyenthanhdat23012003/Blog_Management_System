@@ -29,6 +29,20 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     /**
+     * Handles {@link UnauthorizedException} exceptions.
+     *
+     * @param ex the exception to handle
+     * @return a response entity containing error details with HTTP status 401 (UNAUTHORIZED)
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorizedException(UnauthorizedException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "Unauthorized");
+        response.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    /**
      * Handles {@link ResourceNotFoundException} exceptions.
      *
      * @param ex the exception to handle
@@ -126,6 +140,4 @@ public class GlobalExceptionHandler {
         response.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-
-
 }
