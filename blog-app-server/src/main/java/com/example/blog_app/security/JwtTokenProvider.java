@@ -1,5 +1,6 @@
 package com.example.blog_app.security;
 
+import com.example.blog_app.models.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -52,12 +53,13 @@ public class JwtTokenProvider {
      * @param email the email of the user for whom the token is being generated
      * @return the generated JWT token as a {@link String}
      */
-    public String generateToken(String email) {
+    public String generateToken(User user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
         return Jwts.builder()
-                .setSubject(email) // Sets the email as the subject of the token
+                .setSubject(user.getEmail()) // Sets the email as the subject of the token
+                .claim("id", user.getId())
                 .setIssuedAt(now) // Sets the issue time
                 .setExpiration(expiryDate) // Sets the expiration time
                 .signWith(SignatureAlgorithm.HS512, jwtSecret) // Signs the token with the secret key
