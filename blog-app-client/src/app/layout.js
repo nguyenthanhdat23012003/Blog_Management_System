@@ -2,6 +2,7 @@ import "./globals.css"; // Global styles (Tailwind CSS)
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import {AuthProvider} from "@/context/AuthContext";
 
 export const metadata = {
     title: "Blog Application",
@@ -10,12 +11,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="en">
-        <body className="bg-gray-50 text-gray-900">
-        <Header />
-        <main className="container mx-auto p-4">{children}</main>
-        <Footer />
-        </body>
-        </html>
+        <AuthProvider>
+            <html lang="en">
+                <body className="bg-gray-50 text-gray-900">
+                    <Header/>
+                        <main className="container mx-auto p-4">{children}</main>
+                    <Footer/>
+                </body>
+            </html>
+        </AuthProvider>
+
     );
 }
