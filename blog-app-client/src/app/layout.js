@@ -14,9 +14,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
             <html lang="en">
                 <body className="bg-gray-50 text-gray-900">
-                    <Header/>
-                        <main className="container mx-auto p-4">{children}</main>
-                    <Footer/>
+                    <main>{children}</main>
                 </body>
             </html>
         </AuthProvider>
