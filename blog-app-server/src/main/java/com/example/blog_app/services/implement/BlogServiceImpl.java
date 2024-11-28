@@ -205,7 +205,7 @@ public class BlogServiceImpl implements BlogService {
     public List<BlogResponseDto> getBlogsByCategoryId(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
-        return blogRepository.findByCategoriesContains(category)
+        return blogRepository.findByCategories(category)
                 .stream()
                 .map(blogMapper::toResponseDto)
                 .collect(Collectors.toList());

@@ -84,7 +84,7 @@ public class DefaultDataInitializer {
         ));
 
         assignPermissionsToRole(userRole, List.of(
-                "UPDATE_USER",
+                "VIEW_USER", "UPDATE_USER",
                 "VIEW_BLOG", "CREATE_BLOG", "UPDATE_BLOG", "DELETE_BLOG",
                 "VIEW_SERIES", "CREATE_SERIES", "UPDATE_SERIES", "DELETE_SERIES"
         ));
