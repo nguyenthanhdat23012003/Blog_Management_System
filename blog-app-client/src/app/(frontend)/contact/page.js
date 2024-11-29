@@ -9,12 +9,12 @@ export default function ContactPage() {
                     <p>
                         Have questions, feedback, or collaboration opportunities? We'd love to hear from you! Use the
                         form
-                        below to get in touch with the <span className="font-bold">Tech Insights</span> team.
+                        below to get in touch with the <span className="font-bold">Vie Insights</span> team.
                     </p>
                     <p>You can also reach out to us through the following channels:</p>
                     <ul>
                         <li>
-                            <span className="font-bold">Email:</span> support@techinsights.com
+                            <span className="font-bold">Email:</span> support@vieinsights.com
                         </li>
                         <li>
                             <span className="font-bold">Phone:</span> +1 234-567-890

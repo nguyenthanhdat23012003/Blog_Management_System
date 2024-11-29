@@ -41,7 +41,7 @@ export default function BlogPage() {
 
     return (
         <div className="container mx-auto py-6">
-            <h1 className="text-3xl font-bold mb-4">{blog.title}</h1>
+            <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
             <p className="text-gray-500 mb-4">
                 Published on {blog.create_at} | Last updated on {blog.update_at}
             </p>
@@ -52,7 +52,7 @@ export default function BlogPage() {
                             return (
                                 <h2
                                     key={block.id}
-                                    className={`text-${block.data.level * 2}xl font-bold mb-4`}
+                                    className={`text-${block.data.level}xl font-bold mb-4`}
                                 >
                                     {block.data.text}
                                 </h2>

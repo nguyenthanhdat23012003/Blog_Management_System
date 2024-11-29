@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { fetcher } from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 const AdminLoginPage = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [error, setError] = useState(null);
     const router = useRouter();
+    const { loginAdmin } = useAuth();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,12 +27,13 @@ const AdminLoginPage = () => {
                 body: JSON.stringify(formData),
             });
 
-            const token = response.token;
-            const decoded = jwtDecode(token);
+            const adminToken = response.token;
+            console.log(adminToken);
+            const decoded = jwtDecode(adminToken);
 
             // Check if user ID is 1 (admin ID)
             if (decoded.id === 1) {
-                localStorage.setItem("adminToken", token); // Store admin token
+                loginAdmin(adminToken);
                 router.push("/admin/dashboard"); // Redirect to dashboard
             } else {
                 setError("You do not have access to the admin panel.");
@@ -42,7 +45,7 @@ const AdminLoginPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="rounded-lg flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
             <div className="bg-white shadow-xl rounded-lg p-8 max-w-lg w-full">
                 <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Admin Log in</h2>
                 {error && (
