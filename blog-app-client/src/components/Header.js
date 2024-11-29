@@ -13,10 +13,12 @@ import {
     DocumentTextIcon,
     DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
+
+
 import { fetcher } from "@/services/api";
 
 export default function Header() {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, logout } = useAuth();
     const [categories, setCategories] = useState([]);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const categoryDropdownRef = useRef(null);
@@ -205,11 +207,9 @@ export default function Header() {
                                             <li className="px-4 py-3 hover:bg-indigo-100 text-sm font-medium text-gray-600 rounded-md cursor-pointer flex items-center space-x-2">
                                                 <ArrowRightOnRectangleIcon className="w-5 h-5 text-indigo-600" />
                                                 <button
-                                                    onClick={() => {
-                                                        localStorage.removeItem("token");
-                                                        window.location.reload();
-                                                        router.push("/");
-                                                    }}
+                                                    onClick={() =>
+                                                        logout()
+                                                    }
                                                     className="block hover:text-indigo-600 w-full text-left"
                                                 >
                                                     Log Out

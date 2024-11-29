@@ -80,6 +80,7 @@ const MyAccountPage = () => {
     // Handle update user information
     const handleUpdate = async () => {
         try {
+            console.log(JSON.stringify(formData));
             setLoading(true);
             const updatedUser = await fetcher(`/users/${userId}`, {
                 method: 'PUT',
