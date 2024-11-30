@@ -66,7 +66,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Vô hiệu hóa CSRF
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/me").hasAuthority("VIEW_USER")
+                        .requestMatchers("/api/auth/admin/me").hasAuthority("ADMINISTRATOR")
                         .requestMatchers("/api/roles/**").hasAuthority("ADMINISTRATOR")
                         .requestMatchers("/api/permissions/**").hasAuthority("ADMINISTRATOR")
 
