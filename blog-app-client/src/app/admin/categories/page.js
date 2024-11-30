@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetcher } from "@/services/api";
+import { CheckCircleIcon } from "@heroicons/react/24/outline";
 
 const AdminCategoriesPage = () => {
     const [categories, setCategories] = useState([]);
@@ -12,10 +13,14 @@ const AdminCategoriesPage = () => {
         idFrom: "",
         idTo: "",
     });
-
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [successModalOpen, setSuccessModalOpen] = useState(false);
+
+    const [sortConfig, setSortConfig] = useState({ key: "id", direction: "asc" });
+    const [categoriesPerPage, setCategoriesPerPage] = useState(3);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const router = useRouter();
 
@@ -23,18 +28,16 @@ const AdminCategoriesPage = () => {
         const fetchData = async () => {
             try {
                 const adminToken = localStorage.getItem("adminToken");
-
                 if (!adminToken) {
                     console.error("Admin token is missing.");
                     return;
                 }
 
                 const headers = { Authorization: `Bearer ${adminToken}` };
-
                 const allCategories = await fetcher("/categories", { headers });
 
                 setCategories(allCategories);
-                setFilteredCategories(allCategories); // Initialize filtered categories
+                setFilteredCategories(allCategories);
             } catch (err) {
                 console.error("Failed to fetch categories", err);
             }
@@ -49,6 +52,7 @@ const AdminCategoriesPage = () => {
             category.title.toLowerCase().includes(lowerCaseSearch)
         );
         setFilteredCategories(filtered);
+        setCurrentPage(1);
     };
 
     const handleFilter = () => {
@@ -61,7 +65,6 @@ const AdminCategoriesPage = () => {
             );
         });
 
-        // Apply the search filter as well
         if (search) {
             filtered = filtered.filter((category) =>
                 category.title.toLowerCase().includes(search.toLowerCase())
@@ -69,6 +72,7 @@ const AdminCategoriesPage = () => {
         }
 
         setFilteredCategories(filtered);
+        setCurrentPage(1);
     };
 
     const handleResetFilters = () => {
@@ -87,12 +91,6 @@ const AdminCategoriesPage = () => {
     const handleDelete = async () => {
         try {
             const adminToken = localStorage.getItem("adminToken");
-
-            if (!adminToken) {
-                console.error("Admin token is missing.");
-                return;
-            }
-
             const headers = { Authorization: `Bearer ${adminToken}` };
 
             await fetcher(`/categories/${categoryToDelete}`, {
@@ -100,15 +98,48 @@ const AdminCategoriesPage = () => {
                 headers,
             });
 
-            setCategories((prev) => prev.filter((cat) => cat.id !== categoryToDelete));
-            setFilteredCategories((prev) =>
-                prev.filter((cat) => cat.id !== categoryToDelete)
-            );
+            const updatedCategories = categories.filter((cat) => cat.id !== categoryToDelete);
+            setCategories(updatedCategories);
+            setFilteredCategories(updatedCategories);
+
             setIsDeleteModalOpen(false);
+            setSuccessModalOpen(true);
+
+            setTimeout(() => setSuccessModalOpen(false), 3000);
         } catch (err) {
             console.error("Failed to delete category", err);
         }
     };
+
+    const handleSort = (key) => {
+        if (sortConfig.key === key) {
+            setSortConfig((prev) => ({
+                key,
+                direction: prev.direction === "asc" ? "desc" : "asc",
+            }));
+        } else {
+            setSortConfig({ key, direction: "asc" });
+        }
+    };
+
+    const sortedCategories = [...filteredCategories].sort((a, b) => {
+        const { key, direction } = sortConfig;
+        if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
+        if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+        return 0;
+    });
+
+    const totalPages =
+        categoriesPerPage === "all"
+            ? 1
+            : Math.ceil(sortedCategories.length / categoriesPerPage);
+    const paginatedCategories =
+        categoriesPerPage === "all"
+            ? sortedCategories
+            : sortedCategories.slice(
+                (currentPage - 1) * categoriesPerPage,
+                currentPage * categoriesPerPage
+            );
 
     return (
         <div className="rounded-3xl min-h-screen bg-gradient-to-r from-blue-50 to-indigo-100 p-8">
@@ -122,7 +153,7 @@ const AdminCategoriesPage = () => {
                         Back to Dashboard
                     </button>
                     <button
-                        onClick={() => router.push("/admin/create-category")}
+                        onClick={() => router.push("/admin/categories/create")}
                         className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
                     >
                         Create New Category
@@ -130,8 +161,8 @@ const AdminCategoriesPage = () => {
                 </div>
             </div>
 
-            {/* Search */}
-            <div className="bg-white p-4 shadow-md rounded-lg mb-4 flex items-center gap-4">
+            {/* Search, Filter, View Per Page */}
+            <div className="flex justify-between items-center bg-white p-4 shadow-md rounded-lg mb-4 gap-4">
                 <input
                     type="text"
                     placeholder="Search by title..."
@@ -151,6 +182,24 @@ const AdminCategoriesPage = () => {
                 >
                     {isFilterOpen ? "Close Filters" : "Filters"}
                 </button>
+                <div className="flex items-center gap-2">
+                    <span>Categories per page:</span>
+                    <select
+                        value={categoriesPerPage}
+                        onChange={(e) => {
+                            const value =
+                                e.target.value === "all" ? "all" : parseInt(e.target.value);
+                            setCategoriesPerPage(value);
+                            setCurrentPage(1);
+                        }}
+                        className="border border-gray-300 rounded-md p-2"
+                    >
+                        <option value="3">3</option>
+                        <option value="6">6</option>
+                        <option value="9">9</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
             </div>
 
             {/* Filters */}
@@ -165,7 +214,9 @@ const AdminCategoriesPage = () => {
                                 type="number"
                                 placeholder="From"
                                 value={filters.idFrom}
-                                onChange={(e) => setFilters({ ...filters, idFrom: e.target.value })}
+                                onChange={(e) =>
+                                    setFilters({ ...filters, idFrom: e.target.value })
+                                }
                                 className="border border-gray-300 rounded-md p-2"
                             />
                         </div>
@@ -177,7 +228,9 @@ const AdminCategoriesPage = () => {
                                 type="number"
                                 placeholder="To"
                                 value={filters.idTo}
-                                onChange={(e) => setFilters({ ...filters, idTo: e.target.value })}
+                                onChange={(e) =>
+                                    setFilters({ ...filters, idTo: e.target.value })
+                                }
                                 className="border border-gray-300 rounded-md p-2"
                             />
                         </div>
@@ -204,25 +257,36 @@ const AdminCategoriesPage = () => {
                 <table className="table-auto w-full text-left">
                     <thead className="bg-gray-100">
                     <tr>
-                        <th className="px-6 py-3 border-b text-sm font-medium text-gray-600">
-                            ID
-                        </th>
-                        <th className="px-6 py-3 border-b text-sm font-medium text-gray-600">
-                            Title
-                        </th>
-                        <th className="px-6 py-3 border-b text-sm font-medium text-gray-600">
-                            Description
-                        </th>
+                        {["id", "title", "description"].map((key) => (
+                            <th
+                                key={key}
+                                className={`px-6 py-3 border-b text-sm font-medium text-gray-600 cursor-pointer ${
+                                    key === "id" ? "inline-flex items-center" : ""
+                                }`}
+                                onClick={() => handleSort(key)}
+                            >
+                                <span>{key.toUpperCase()}</span>
+                                {sortConfig.key === key && (
+                                    <span className="ml-1">
+                                            {sortConfig.direction === "asc" ? "▲" : "▼"}
+                                        </span>
+                                )}
+                            </th>
+                        ))}
                         <th className="px-6 py-3 border-b text-sm font-medium text-gray-600">
                             Actions
                         </th>
                     </tr>
                     </thead>
                     <tbody>
-                    {filteredCategories.map((category) => (
+                    {paginatedCategories.map((category) => (
                         <tr key={category.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 border-b text-gray-700">{category.id}</td>
-                            <td className="px-6 py-4 border-b text-gray-700">{category.title}</td>
+                            <td className="px-6 py-4 border-b text-gray-700">
+                                {category.id}
+                            </td>
+                            <td className="px-6 py-4 border-b text-gray-700">
+                                {category.title}
+                            </td>
                             <td className="px-6 py-4 border-b text-gray-700">
                                 {category.description.length > 50
                                     ? `${category.description.slice(0, 50)}...`
@@ -231,7 +295,7 @@ const AdminCategoriesPage = () => {
                             <td className="px-6 py-4 border-b">
                                 <button
                                     onClick={() =>
-                                        router.push(`/admin/edit-category/${category.id}`)
+                                        router.push(`/admin/categories/edit/${category.id}`)
                                     }
                                     className="text-indigo-600 hover:underline mr-4"
                                 >
@@ -250,13 +314,47 @@ const AdminCategoriesPage = () => {
                 </table>
             </div>
 
+            {/* Pagination */}
+            {categoriesPerPage !== "all" && totalPages > 1 && (
+                <div className="flex justify-center mt-6">
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 border rounded-md mr-2 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`px-4 py-2 border rounded-md mx-1 ${
+                                currentPage === page
+                                    ? "bg-blue-600 text-white"
+                                    : "hover:bg-gray-200"
+                            }`}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 border rounded-md ml-2 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
+
             {/* Delete Modal */}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-lg shadow-md w-96">
                         <h2 className="text-lg font-bold mb-4 text-gray-800">Confirm Delete</h2>
                         <p className="text-sm text-gray-600 mb-6">
-                            Are you sure you want to delete this category? This action cannot be undone.
+                            Are you sure you want to delete this category? This action cannot be
+                            undone.
                         </p>
                         <div className="flex justify-end space-x-4">
                             <button
@@ -272,6 +370,18 @@ const AdminCategoriesPage = () => {
                                 Delete
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Success Modal */}
+            {successModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-md w-96 flex flex-col items-center justify-center">
+                        <CheckCircleIcon className="h-12 w-12 text-green-500 mb-4" />
+                        <h2 className="text-lg font-bold text-gray-800 text-center">
+                            Successfully Deleted!
+                        </h2>
                     </div>
                 </div>
             )}
