@@ -58,4 +58,14 @@ public class AuthController {
         LoginResponseDto responseDto = authService.login(requestDto);
         return ResponseEntity.status(201).body(responseDto);
     }
+
+    @PostMapping("/me")
+    public ResponseEntity<?> authCurrentUser(){
+        return ResponseEntity.status(200).body("You are logged in");
+    }
+
+    @PostMapping("/admin/me")
+    public ResponseEntity<?> authCurrentAdminUser(){
+        return ResponseEntity.status(200).body("You are logged in");
+    }
 }
