@@ -228,6 +228,7 @@ Follow these steps to build and run the application using Docker:
 - **For Docker setup**, the `docker-compose.yml` file manages all dependencies and services automatically.
 - Use Adminer (http://localhost:8081) to visually interact with the database.
 - For development, frontend hot-reloading is enabled in both setups.
+- The code converted to TypeScript is in the master-type-script branch, switch to that branch and do the same steps as above.
 
 ## Database Design
 
