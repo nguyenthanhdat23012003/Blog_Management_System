@@ -42,5 +42,13 @@ services:
     depends_on:
       - backend
 
+  adminer:
+    image: adminer
+    container_name: adminer_container
+    depends_on:
+      - mysql
+    ports:
+      - "8081:8080"
+
 volumes:
   mysql_data:
