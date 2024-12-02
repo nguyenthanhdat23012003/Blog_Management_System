@@ -85,36 +85,35 @@ const CreateBlogPage = () => {
 
     // Khởi tạo EditorJS
     useEffect(() => {
-        editorRef.current = new EditorJS({
-            holder: "editorjs",
-            tools: {
-                header: Header,
-                paragraph: Paragraph,
-                list: List,
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: "/upload/image",
-                            byUrl: "/upload/image-url",
+        if (typeof window !== "undefined" && !editorRef.current) {
+            editorRef.current = new EditorJS({
+                holder: "editorjs",
+                tools: {
+                    header: Header,
+                    paragraph: Paragraph,
+                    list: List,
+                    image: {
+                        class: ImageTool,
+                        config: {
+                            endpoints: {
+                                byFile: "/upload/image",
+                                byUrl: "/upload/image-url",
+                            },
                         },
                     },
                 },
-            },
-            placeholder: "Start building your content here...",
-        });
-
+                placeholder: "Start building your content here...",
+            });
+        }
+    
         return () => {
             if (editorRef.current?.destroy) {
                 editorRef.current.destroy();
-            } else {
-                const editorContainer = document.getElementById("editorjs");
-                if (editorContainer) {
-                    editorContainer.innerHTML = "";
-                }
+                editorRef.current = null;
             }
         };
     }, []);
+    
 
     // Xử lý thêm và xóa categories
     const handleAddCategory = (categoryId) => {

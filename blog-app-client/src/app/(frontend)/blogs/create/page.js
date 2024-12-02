@@ -62,36 +62,35 @@ const CreateBlogPage = () => {
     }, [userId]);
 
     useEffect(() => {
-        editorRef.current = new EditorJS({
-            holder: "editorjs",
-            tools: {
-                header: Header,
-                paragraph: Paragraph,
-                list: List,
-                image: {
-                    class: ImageTool,
-                    config: {
-                        endpoints: {
-                            byFile: "/upload/image",
-                            byUrl: "/upload/image-url",
+        if (typeof window !== "undefined" && !editorRef.current) {
+            editorRef.current = new EditorJS({
+                holder: "editorjs",
+                tools: {
+                    header: Header,
+                    paragraph: Paragraph,
+                    list: List,
+                    image: {
+                        class: ImageTool,
+                        config: {
+                            endpoints: {
+                                byFile: "/upload/image",
+                                byUrl: "/upload/image-url",
+                            },
                         },
                     },
                 },
-            },
-            placeholder: "Start building your content here...",
-        });
-
+                placeholder: "Start building your content here...",
+            });
+        }
+    
         return () => {
             if (editorRef.current?.destroy) {
                 editorRef.current.destroy();
-            } else {
-                const editorContainer = document.getElementById("editorjs");
-                if (editorContainer) {
-                    editorContainer.innerHTML = "";
-                }
+                editorRef.current = null;
             }
         };
     }, []);
+    
 
 
     const handleAddCategory = (categoryId) => {
@@ -139,7 +138,7 @@ const CreateBlogPage = () => {
 
     return (
         <div className="rounded-xl flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-            <div className="bg-white shadow-xl rounded-lg p-8 max-w-4xl w-full">
+            <div className="my-20 bg-white shadow-xl rounded-lg p-8 max-w-4xl w-full">
                 <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
                     Create Blog
                 </h2>

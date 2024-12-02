@@ -122,6 +122,36 @@ const AdminCategoriesPage = () => {
         }
     };
 
+    const generatePagination = () => {
+        const visiblePages = 5; // Số trang tối đa được hiển thị
+        let pages = [];
+    
+        if (totalPages <= visiblePages) {
+            // Hiển thị tất cả các trang nếu ít hơn hoặc bằng 5
+            pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+        } else {
+            // Hiển thị trang đầu, trang cuối và dấu "..."
+            if (currentPage <= Math.ceil(visiblePages / 2)) {
+                pages = [...Array.from({ length: visiblePages - 1 }, (_, i) => i + 1), '...', totalPages];
+            } else if (currentPage > totalPages - Math.floor(visiblePages / 2)) {
+                pages = [1, '...', ...Array.from({ length: visiblePages - 1 }, (_, i) => totalPages - visiblePages + i + 2)];
+            } else {
+                pages = [
+                    1,
+                    '...',
+                    currentPage - 1,
+                    currentPage,
+                    currentPage + 1,
+                    '...',
+                    totalPages,
+                ];
+            }
+        }
+    
+        return pages;
+    };
+    
+
     const sortedCategories = [...filteredCategories].sort((a, b) => {
         const { key, direction } = sortConfig;
         if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
@@ -317,34 +347,36 @@ const AdminCategoriesPage = () => {
             {/* Pagination */}
             {categoriesPerPage !== "all" && totalPages > 1 && (
                 <div className="flex justify-center mt-6">
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border rounded-md mr-2 hover:bg-gray-200 disabled:opacity-50"
+                >
+                    Previous
+                </button>
+                {generatePagination().map((page, index) => (
                     <button
-                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 border rounded-md mr-2 hover:bg-gray-200 disabled:opacity-50"
+                        key={index}
+                        disabled={page === "..."}
+                        onClick={() => page !== "..." && setCurrentPage(page)}
+                        className={`px-4 py-2 border rounded-md mx-1 ${
+                            currentPage === page
+                                ? "bg-blue-600 text-white"
+                                : "hover:bg-gray-200"
+                        }`}
                     >
-                        Previous
+                        {page}
                     </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => setCurrentPage(page)}
-                            className={`px-4 py-2 border rounded-md mx-1 ${
-                                currentPage === page
-                                    ? "bg-blue-600 text-white"
-                                    : "hover:bg-gray-200"
-                            }`}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                    <button
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 border rounded-md ml-2 hover:bg-gray-200 disabled:opacity-50"
-                    >
-                        Next
-                    </button>
-                </div>
+                ))}
+                <button
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 border rounded-md ml-2 hover:bg-gray-200 disabled:opacity-50"
+                >
+                    Next
+                </button>
+            </div>
+            
             )}
 
             {/* Delete Modal */}
