@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: 122002
+      MYSQL_DATABASE: blog_spring
+      MYSQL_USER: spring
+      MYSQL_PASSWORD: 122002
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./blog-app-server
+      dockerfile: Dockerfile
+    container_name: spring_boot_container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/blog_spring
+      SPRING_DATASOURCE_USERNAME: spring
+      SPRING_DATASOURCE_PASSWORD: 122002
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./blog-app-client
+      dockerfile: Dockerfile
+    container_name: nextjs_container
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./blog-app-client:/app # Mount mã nguồn để hot reload
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
