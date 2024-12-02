@@ -1,31 +1,23 @@
 {
   "compilerOptions": {
-    "target": "esnext",                          // Sử dụng các tính năng JavaScript hiện đại
-    "module": "esnext",                          // Tương thích với Next.js
-    "lib": ["dom", "dom.iterable", "esnext"],    // Bao gồm các tính năng DOM và JavaScript hiện đại
-    "allowJs": true,                             // Cho phép sử dụng các file .js trong dự án
-    "skipLibCheck": true,                        // Bỏ qua kiểm tra .d.ts để tăng tốc biên dịch
-    "strict": true,                              // Bật chế độ nghiêm ngặt cho kiểm tra kiểu
-    "baseUrl": ".",                              // Gốc của dự án
+    "target": "esnext", // Sử dụng các tính năng JavaScript hiện đại
+    "module": "esnext", // Tương thích với Next.js
+    "lib": ["dom", "dom.iterable", "esnext"], // Bao gồm các tính năng DOM và JavaScript hiện đại
+    "allowJs": true, // Cho phép sử dụng các file .js trong dự án
+    "skipLibCheck": true, // Bỏ qua kiểm tra .d.ts để tăng tốc biên dịch
+    "strict": true, // Bật chế độ nghiêm ngặt cho kiểm tra kiểu
+    "baseUrl": ".", // Gốc của dự án
     "paths": {
-      "@/*": ["src/*"]                           // Cấu hình alias cho đường dẫn
+      "@/*": ["src/*"] // Cấu hình alias cho đường dẫn
     },
-    "esModuleInterop": true,                     // Hỗ trợ import module CommonJS
-    "moduleResolution": "node",                  // Dùng cơ chế module của Node.js
-    "resolveJsonModule": true,                   // Cho phép import file .json
-    "isolatedModules": true,                     // Cần thiết cho Next.js
-    "jsx": "preserve",                           // Bảo toàn JSX để Next.js xử lý
-    "noEmit": true,                              // Không xuất file .js
-    "incremental": true                          // Tăng tốc độ biên dịch bằng incremental build
+    "esModuleInterop": true, // Hỗ trợ import module CommonJS
+    "moduleResolution": "node", // Dùng cơ chế module của Node.js
+    "resolveJsonModule": true, // Cho phép import file .json
+    "isolatedModules": true, // Cần thiết cho Next.js
+    "jsx": "preserve", // Bảo toàn JSX để Next.js xử lý
+    "noEmit": true, // Không xuất file .js
+    "incremental": true // Tăng tốc độ biên dịch bằng incremental build
   },
-  "include": [
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
 }
