@@ -213,6 +213,7 @@ Follow these steps to build and run the application using Docker:
 
 5. **Verify Setup**
    - Frontend: http://localhost:3000
+   - Admin: http://localhost:3000/admin (gmail: admin@gmail.com, password: 123)
    - Backend API: http://localhost:8080/api
    - Adminer: http://localhost:8081
      - Server: `mysql_container`
